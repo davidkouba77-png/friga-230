@@ -3431,5 +3431,30 @@
     bindEvents();
     initFirebaseAndListeners();
   </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBAGl9T8gINNjgKY8hZagItzNMTkn5_BYo",
+    authDomain: "navesy-230.firebaseapp.com",
+    projectId: "navesy-230",
+    storageBucket: "navesy-230.firebasestorage.app",
+    messagingSenderId: "609525524829",
+    appId: "1:609525524829:web:1a8f50e5cc92eca63520b4",
+    measurementId: "G-0552WL878N"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  await signInAnonymously(auth);
+  window.frigaDb = db;
+  window.frigaDocRef = doc(db, "fleet", "friga-230");
+  window.frigaSetDoc = setDoc;
+  window.frigaOnSnapshot = onSnapshot;
+</script>
 </body>
 </html>
