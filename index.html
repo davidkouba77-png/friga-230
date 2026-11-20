@@ -101,6 +101,13 @@
         </div>
       </div>
 
+      <div id="firebase-diag-banner" class="hidden mt-2.5 px-3 py-2 rounded-xl bg-amber-950/90 border border-amber-700/80 text-amber-100 text-xs flex flex-wrap items-center justify-between gap-2">
+        <span id="firebase-diag-text"></span>
+        <button id="btn-retry-firebase" type="button" class="px-2.5 py-1 rounded-lg bg-amber-800 hover:bg-amber-700 text-white font-semibold cursor-pointer">
+          Zkusit Firebase znovu
+        </button>
+      </div>
+
       <nav class="flex gap-2 mt-3.5 pt-2.5 border-t border-slate-800 overflow-x-auto" aria-label="Hlavní záložky">
         <button
           id="tab-kontrola"
@@ -1346,6 +1353,19 @@
       }, 3600);
     }
 
+    function setFirebaseDiagnostic(msg) {
+      const banner = document.getElementById("firebase-diag-banner");
+      const text = document.getElementById("firebase-diag-text");
+      if (!banner || !text) return;
+      if (!msg) {
+        banner.classList.add("hidden");
+        text.textContent = "";
+      } else {
+        text.textContent = msg;
+        banner.classList.remove("hidden");
+      }
+    }
+
     function evaluateKontrolaItem(item) {
       const stkDays = daysUntilIso(item.stk);
       const pristiDays = daysUntilIso(item.pristiKontrola);
@@ -1487,13 +1507,15 @@
       uploadedPhotoDataUrl: "",
       uploadedPhotoName: "",
       isSeeding: false,
-      firebaseReady: false,
-      storageMode: "memory"
+      firebaseReady: true,
+      storageMode: "local"
     };
 
+    let firebaseApp = null;
     let db = null;
     let auth = null;
     let docRef = null;
+    let unsubscribeSnapshot = null;
     let ignoreNextSnapshot = false;
 
     function renderWheelMeasurementRows() {
@@ -1502,19 +1524,19 @@
       tbody.innerHTML = WHEEL_POSITIONS.map((pos, idx) => `
         <tr>
           <td class="px-2.5 py-1.5 font-medium text-slate-800 whitespace-nowrap">${escapeHtml(pos)}</td>
-          <td class="px-2 py-1.5">
+          <td class="px-2.5 py-1.5">
             <input type="number" step="0.1" min="0" data-wheel-idx="${idx}" data-wheel-field="dezen" placeholder="mm"
               class="w-20 rounded-lg border border-slate-300 px-2 py-1 text-xs" />
           </td>
-          <td class="px-2 py-1.5">
+          <td class="px-2.5 py-1.5">
             <input type="number" step="0.1" min="0" data-wheel-idx="${idx}" data-wheel-field="tlak" placeholder="bar"
               class="w-20 rounded-lg border border-slate-300 px-2 py-1 text-xs" />
           </td>
-          <td class="px-2 py-1.5">
+          <td class="px-2.5 py-1.5">
             <input type="text" data-wheel-idx="${idx}" data-wheel-field="znacka" placeholder="Značka"
               class="w-24 rounded-lg border border-slate-300 px-2 py-1 text-xs" />
           </td>
-          <td class="px-2 py-1.5">
+          <td class="px-2.5 py-1.5">
             <input type="text" data-wheel-idx="${idx}" data-wheel-field="stav" placeholder="Stav / poškození"
               class="w-36 rounded-lg border border-slate-300 px-2 py-1 text-xs" />
           </td>
@@ -1609,38 +1631,52 @@
     }
 
     async function persistAllToCloud(overwrite = false) {
-      if (state.storageMode === "local" || !docRef) {
-        saveLocalState();
+      saveLocalState();
+      if (state.storageMode !== "firebase" || !docRef) {
         return;
       }
       ignoreNextSnapshot = true;
-      await setDoc(
-        docRef,
-        {
-          kontrola: state.kontrola,
-          tankovani: state.tankovani,
-          checklists: state.checklists,
-          updatedAtMs: Date.now()
-        },
-        overwrite ? {} : { merge: true }
-      );
-      saveLocalState();
+      try {
+        await setDoc(
+          docRef,
+          {
+            kontrola: state.kontrola,
+            tankovani: state.tankovani,
+            checklists: state.checklists,
+            updatedAtMs: Date.now()
+          },
+          overwrite ? {} : { merge: true }
+        );
+      } catch (err) {
+        ignoreNextSnapshot = false;
+        state.storageMode = "local";
+        setSyncStatus("local", "Uloženo v prohlížeči");
+        setFirebaseDiagnostic(`Firebase zápis selhal (${err?.code || err?.message || "chyba"}). Změny se ukládají v tomto prohlížeči.`);
+      }
     }
 
     async function initFirebaseAndListeners() {
+      loadLocalState(false);
+      state.firebaseReady = true;
+      renderAll();
+
+      if (unsubscribeSnapshot) {
+        try { unsubscribeSnapshot(); } catch (_) {}
+        unsubscribeSnapshot = null;
+      }
+
       try {
         if (!firebaseConfig || !firebaseConfig.apiKey) {
           state.storageMode = "local";
-          state.firebaseReady = true;
-          loadLocalState(false);
           setSyncStatus("local", "Uloženo v prohlížeči");
-          renderAll();
           return;
         }
 
-        const app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        db = getFirestore(app);
+        if (!firebaseApp) {
+          firebaseApp = initializeApp(firebaseConfig);
+        }
+        auth = getAuth(firebaseApp);
+        db = getFirestore(firebaseApp);
         docRef = doc(db, "fleet", "friga-230");
 
         window.frigaDb = db;
@@ -1648,14 +1684,14 @@
         window.frigaSetDoc = setDoc;
         window.frigaOnSnapshot = onSnapshot;
 
-        setSyncStatus("syncing", "Přihlašování...");
+        setSyncStatus("syncing", "Připojování k Firebase...");
         await signInAnonymously(auth);
 
-        state.firebaseReady = true;
         state.storageMode = "firebase";
+        setFirebaseDiagnostic("");
         setSyncStatus("online", "Sdíleno (Firebase online)");
 
-        onSnapshot(
+        unsubscribeSnapshot = onSnapshot(
           docRef,
           async (snap) => {
             if (ignoreNextSnapshot) {
@@ -1686,20 +1722,18 @@
           },
           (error) => {
             console.error("Chyba odběru dat z Firestore:", error);
-            loadLocalState(false);
-            setSyncStatus("error", "Chyba odběru dat");
+            state.storageMode = "local";
+            setSyncStatus("local", "Uloženo v prohlížeči");
+            setFirebaseDiagnostic(`Firebase Firestore odpojen (${error?.code || error?.message || "chyba"}). Aplikace jede lokálně v prohlížeči.`);
             renderAll();
-            showToast("Nepodařilo se načíst sdílená data z Firebase.", "error");
           }
         );
       } catch (err) {
         console.error("Chyba inicializace Firebase:", err);
         state.storageMode = "local";
-        state.firebaseReady = true;
-        loadLocalState(false);
-        setSyncStatus("error", "Offline / lokální režim");
+        setSyncStatus("local", "Uloženo v prohlížeči");
+        setFirebaseDiagnostic(`Firebase není dostupný (${err?.code || err?.message || "připojení selhalo"}). Změny se ukládají v prohlížeči.`);
         renderAll();
-        showToast("Připojení k Firebase selhalo, běží lokální uložení.", "warning");
       }
     }
 
@@ -2101,10 +2135,6 @@
 
     async function handleChecklistSubmit(e) {
       e.preventDefault();
-      if (!state.firebaseReady) {
-        showToast("Počkejte prosím na spuštění aplikace.", "warning");
-        return;
-      }
 
       const spz = document.getElementById("cl-spz").value.trim().toUpperCase();
       const technik = document.getElementById("cl-technik").value.trim() || state.currentUser || "Technik";
@@ -2461,10 +2491,6 @@
 
     async function handleSaveKontrolaModal(e) {
       e.preventDefault();
-      if (!state.firebaseReady) {
-        showToast("Databáze není připravena.", "warning");
-        return;
-      }
 
       const isNew = document.getElementById("edit-k-is-new").value === "true";
       const existingId = document.getElementById("edit-k-id").value;
@@ -2545,10 +2571,6 @@
 
     async function handleSaveTankovaniModal(e) {
       e.preventDefault();
-      if (!state.firebaseReady) {
-        showToast("Databáze není připravena.", "warning");
-        return;
-      }
 
       const isNew = document.getElementById("edit-t-is-new").value === "true";
       const existingId = document.getElementById("edit-t-id").value;
@@ -2787,6 +2809,10 @@
       document.getElementById("tab-kontrola").addEventListener("click", () => switchTab("kontrola"));
       document.getElementById("tab-checklist").addEventListener("click", () => switchTab("checklist"));
       document.getElementById("tab-tankovani").addEventListener("click", () => switchTab("tankovani"));
+
+      document.getElementById("btn-retry-firebase").addEventListener("click", () => {
+        initFirebaseAndListeners();
+      });
 
       const userInput = document.getElementById("current-user-input");
       userInput.value = state.currentUser;
