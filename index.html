@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0f172a" />
-  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="FRIGA 230" />
   <link id="pwa-manifest-link" rel="manifest" />
@@ -17,6 +17,7 @@
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
+    /* Jemné vlastní posuvníky pro tabulky */
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
@@ -39,6 +40,7 @@
   <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+        <!-- Název a podtitul -->
         <div>
           <div class="flex items-center gap-2.5">
             <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-sm shadow">
@@ -48,12 +50,11 @@
               FRIGA 230 – Evidence a hlídání STK
             </h1>
           </div>
-          <p class="text-xs sm:text-sm text-slate-300 mt-0.5">
-            Sdílená aplikace pro kontrolu
-          </p>
         </div>
 
+        <!-- Pravý panel: Technik, stav synchronizace, akce -->
         <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+          <!-- Jméno aktuálního technika -->
           <div class="flex items-center bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5">
             <label for="current-user-input" class="text-xs text-slate-400 mr-2 whitespace-nowrap">
               Technik / uživatel:
@@ -66,6 +67,7 @@
             />
           </div>
 
+          <!-- Stav synchronizace / uložení -->
           <div
             id="sync-status-badge"
             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700"
@@ -75,6 +77,7 @@
             <span id="sync-text">Připojování...</span>
           </div>
 
+          <!-- Instalace jako aplikace na mobil / PC -->
           <button
             id="btn-install-app"
             type="button"
@@ -83,31 +86,27 @@
             Nainstalovat aplikaci
           </button>
 
+          <!-- Export CSV -->
           <button
             id="btn-export-csv"
             type="button"
-            class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 transition cursor-pointer"
+            class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 rounded-xl transition cursor-pointer"
           >
             Export CSV
           </button>
 
+          <!-- Obnovit výchozí CSV data -->
           <button
             id="btn-reset-seed"
             type="button"
-            class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-800/70 transition cursor-pointer"
+            class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-800/70 rounded-xl transition cursor-pointer"
           >
             Obnovit výchozí CSV data
           </button>
         </div>
       </div>
 
-      <div id="firebase-diag-banner" class="hidden mt-2.5 px-3 py-2 rounded-xl bg-amber-950/90 border border-amber-700/80 text-amber-100 text-xs flex flex-wrap items-center justify-between gap-2">
-        <span id="firebase-diag-text"></span>
-        <button id="btn-retry-firebase" type="button" class="px-2.5 py-1 rounded-lg bg-amber-800 hover:bg-amber-700 text-white font-semibold cursor-pointer">
-          Zkusit Firebase znovu
-        </button>
-      </div>
-
+      <!-- Hlavní záložky -->
       <nav class="flex gap-2 mt-3.5 pt-2.5 border-t border-slate-800 overflow-x-auto" aria-label="Hlavní záložky">
         <button
           id="tab-kontrola"
@@ -121,7 +120,7 @@
           type="button"
           class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition whitespace-nowrap cursor-pointer text-slate-300 hover:bg-slate-800 hover:text-white"
         >
-          Zápis z checklistu + foto
+          Zápis do checklistu
         </button>
         <button
           id="tab-tankovani"
@@ -132,6 +131,7 @@
         </button>
       </nav>
 
+      <!-- Nápověda pro instalaci na mobil / PC -->
       <div id="install-hint-bar" class="mt-2.5 text-[11px] sm:text-xs text-slate-400 flex flex-wrap items-center justify-between gap-2">
         <span>
           <strong>Tip pro mobil i PC:</strong> Otevřete stránku v prohlížeči a zvolte <em>„Přidat na plochu“</em> / <em>„Nainstalovat aplikaci“</em> – poběží jako samostatná aplikace bez lišty prohlížeče.
@@ -140,12 +140,17 @@
     </div>
   </header>
 
+  <!-- Notifikační banner (místo alert()) -->
   <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full px-4 sm:px-0 pointer-events-none"></div>
 
+  <!-- Hlavní obsah aplikace -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-    <!-- ZÁLOŽKA 1: KONTROLA A STK -->
+    <!-- ========================================================= -->
+    <!-- ZÁLOŽKA 1: KONTROLA A STK                                 -->
+    <!-- ========================================================= -->
     <section id="view-kontrola" class="space-y-6">
+      <!-- Horní souhrnný panel (6 dlaždic dle zadání) -->
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
           <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">CELKEM VOZIDEL</p>
@@ -184,6 +189,7 @@
         </div>
       </div>
 
+      <!-- Ovládací panel: filtry + přidání nové SPZ -->
       <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div class="flex flex-col sm:flex-row gap-3 flex-1">
           <div class="relative flex-1 max-w-xs">
@@ -224,6 +230,7 @@
         </div>
       </div>
 
+      <!-- Tabulka automaticky seřazených vozidel -->
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-5 py-3.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 bg-slate-50/70">
           <div>
@@ -249,27 +256,33 @@
                 <th class="px-4 py-3 text-left font-semibold">Kalibrace</th>
                 <th class="px-4 py-3 text-left font-semibold">Závady / Poškození</th>
                 <th class="px-4 py-3 text-left font-semibold">MTH / Pneu</th>
-                <th class="px-4 py-3 text-left font-semibold">Foto / Zapsal</th>
+                <th class="px-4 py-3 text-left font-semibold">Zapsal</th>
                 <th class="px-4 py-3 text-right font-semibold">Akce</th>
               </tr>
             </thead>
-            <tbody id="kontrola-tbody" class="divide-y divide-slate-100 bg-white"></tbody>
+            <tbody id="kontrola-tbody" class="divide-y divide-slate-100 bg-white">
+              <!-- Naplní JS -->
+            </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- ZÁLOŽKA 2: ZÁPIS Z CHECKLISTU + FOTO -->
+    <!-- ========================================================= -->
+    <!-- ZÁLOŽKA 2: ZÁPIS DO CHECKLISTU                           -->
+    <!-- ========================================================= -->
     <section id="view-checklist" class="hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Formulář rychlého přepisu propiskového checklistu -->
         <form id="checklist-form" class="lg:col-span-7 bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200 space-y-5">
           <div class="border-b border-slate-200 pb-4">
             <h2 class="text-lg font-bold text-slate-900">Rychlý přepis propiskového checklistu</h2>
             <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Vyplňte údaje z papírového protokolu <em>Checklist návěs</em> a případně přiložte fotku. Po uložení se aktualizuje evidence STK i řazení.
+              Vyplňte údaje z papírového protokolu <em>Checklist návěs</em>. Po uložení se aktualizuje evidence STK i řazení.
             </p>
           </div>
 
+          <!-- Základní identifikační údaje -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label for="cl-spz" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
@@ -375,6 +388,7 @@
             </div>
           </div>
 
+          <!-- Sekce A: Měření dezénu, stav pneumatik a brzdové soustavy -->
           <div class="pt-3 border-t border-slate-100 space-y-3">
             <button
               type="button"
@@ -398,14 +412,21 @@
                       <th class="px-2.5 py-2 text-left font-semibold">Vizuální stav / Poškození</th>
                     </tr>
                   </thead>
-                  <tbody id="wheel-measurements-tbody" class="divide-y divide-slate-100 bg-white"></tbody>
+                  <tbody id="wheel-measurements-tbody" class="divide-y divide-slate-100 bg-white">
+                    <!-- Naplní JS podle pozic kol -->
+                  </tbody>
                 </table>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label for="cl-tlak-pneu" class="block text-xs font-semibold text-slate-600 mb-1">Tlak v pneu</label>
-                  <select id="cl-tlak-pneu" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <label for="cl-tlak-pneu" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Tlak v pneu
+                  </label>
+                  <select
+                    id="cl-tlak-pneu"
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
                     <option value="">— Nezadáno —</option>
                     <option value="OK">☐ OK</option>
                     <option value="Doplněno">☐ Doplněno</option>
@@ -413,52 +434,96 @@
                   </select>
                 </div>
                 <div>
-                  <label for="cl-pneu-pozn" class="block text-xs font-semibold text-slate-600 mb-1">Poznámka k tlaku v pneu</label>
-                  <input id="cl-pneu-pozn" type="text" placeholder="Poznámka..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label for="cl-pneu-pozn" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Poznámka k tlaku v pneu
+                  </label>
+                  <input
+                    id="cl-pneu-pozn"
+                    type="text"
+                    placeholder="Poznámka..."
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
 
                 <div>
-                  <label for="cl-kotouce" class="block text-xs font-semibold text-slate-600 mb-1">Stav brzdových kotoučů</label>
-                  <select id="cl-kotouce" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <label for="cl-kotouce" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Stav brzdových kotoučů
+                  </label>
+                  <select
+                    id="cl-kotouce"
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
                     <option value="">— Nezadáno —</option>
                     <option value="V normě">☐ V normě</option>
                     <option value="Poškozené">☐ Poškozené</option>
                   </select>
                 </div>
                 <div>
-                  <label for="cl-kotouce-pozn" class="block text-xs font-semibold text-slate-600 mb-1">Poznámka k brzdovým kotoučům</label>
-                  <input id="cl-kotouce-pozn" type="text" placeholder="Poznámka..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label for="cl-kotouce-pozn" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Poznámka k brzdovým kotoučům
+                  </label>
+                  <input
+                    id="cl-kotouce-pozn"
+                    type="text"
+                    placeholder="Poznámka..."
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
 
                 <div>
-                  <label for="cl-vzduch" class="block text-xs font-semibold text-slate-600 mb-1">Vzduchový systém a těsnost okruhu</label>
-                  <select id="cl-vzduch" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <label for="cl-vzduch" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Vzduchový systém a těsnost okruhu
+                  </label>
+                  <select
+                    id="cl-vzduch"
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
                     <option value="">— Nezadáno —</option>
                     <option value="OK">☐ OK</option>
                     <option value="Únik">☐ Únik</option>
                   </select>
                 </div>
                 <div>
-                  <label for="cl-vzduch-pozn" class="block text-xs font-semibold text-slate-600 mb-1">Poznámka ke vzduchovému systému</label>
-                  <input id="cl-vzduch-pozn" type="text" placeholder="Poznámka..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label for="cl-vzduch-pozn" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Poznámka ke vzduchovému systému
+                  </label>
+                  <input
+                    id="cl-vzduch-pozn"
+                    type="text"
+                    placeholder="Poznámka..."
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
 
                 <div>
-                  <label for="cl-mechy" class="block text-xs font-semibold text-slate-600 mb-1">Stav měchů</label>
-                  <select id="cl-mechy" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <label for="cl-mechy" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Stav měchů
+                  </label>
+                  <select
+                    id="cl-mechy"
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
                     <option value="">— Nezadáno —</option>
                     <option value="V normě">☐ V normě</option>
                     <option value="Poškozené">☐ Poškozené</option>
                   </select>
                 </div>
                 <div>
-                  <label for="cl-mechy-pozn" class="block text-xs font-semibold text-slate-600 mb-1">Poznámka k měchům</label>
-                  <input id="cl-mechy-pozn" type="text" placeholder="Poznámka..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label for="cl-mechy-pozn" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Poznámka k měchům
+                  </label>
+                  <input
+                    id="cl-mechy-pozn"
+                    type="text"
+                    placeholder="Poznámka..."
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
               </div>
             </div>
           </div>
 
+          <!-- Sekce B: Stav skříně, izolace a dělicí přepážka -->
           <div class="pt-3 border-t border-slate-100 space-y-3">
             <button
               type="button"
@@ -472,73 +537,138 @@
             </button>
             <div id="sec-skrin" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label for="cl-vnitrni-plast" class="block text-xs font-semibold text-slate-600 mb-1">Vnitřní plášť a podlaha</label>
-                <select id="cl-vnitrni-plast" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-vnitrni-plast" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Vnitřní plášť a podlaha
+                </label>
+                <select
+                  id="cl-vnitrni-plast"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="OK">☐ OK</option>
                   <option value="Poškozeno">☐ Poškozeno</option>
                 </select>
               </div>
               <div>
-                <label for="cl-vnitrni-plast-popis" class="block text-xs font-semibold text-slate-600 mb-1">Popis poškození (vnitřní plášť / podlaha)</label>
-                <input id="cl-vnitrni-plast-popis" type="text" placeholder="Popis poškození..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-vnitrni-plast-popis" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Popis poškození (vnitřní plášť / podlaha)
+                </label>
+                <input
+                  id="cl-vnitrni-plast-popis"
+                  type="text"
+                  placeholder="Popis poškození..."
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-vnejsi-plast" class="block text-xs font-semibold text-slate-600 mb-1">Vnější plášť a střecha</label>
-                <select id="cl-vnejsi-plast" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-vnejsi-plast" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Vnější plášť a střecha
+                </label>
+                <select
+                  id="cl-vnejsi-plast"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="OK">☐ OK</option>
                   <option value="Poškozeno">☐ Poškozeno</option>
                 </select>
               </div>
               <div>
-                <label for="cl-vnejsi-plast-popis" class="block text-xs font-semibold text-slate-600 mb-1">Popis poškození (vnější plášť / střecha)</label>
-                <input id="cl-vnejsi-plast-popis" type="text" placeholder="Popis poškození..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-vnejsi-plast-popis" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Popis poškození (vnější plášť / střecha)
+                </label>
+                <input
+                  id="cl-vnejsi-plast-popis"
+                  type="text"
+                  placeholder="Popis poškození..."
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-agregat-vnitrni" class="block text-xs font-semibold text-slate-600 mb-1">Stav agregátu (vnitřní stav)</label>
-                <select id="cl-agregat-vnitrni" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-agregat-vnitrni" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Stav agregátu (vnitřní stav)
+                </label>
+                <select
+                  id="cl-agregat-vnitrni"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="OK">☐ OK</option>
                   <option value="Poškozeno">☐ Poškozeno</option>
                 </select>
               </div>
               <div>
-                <label for="cl-agregat-vnitrni-popis" class="block text-xs font-semibold text-slate-600 mb-1">Popis (vnitřní stav agregátu)</label>
-                <input id="cl-agregat-vnitrni-popis" type="text" placeholder="Popis..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-agregat-vnitrni-popis" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Popis (vnitřní stav agregátu)
+                </label>
+                <input
+                  id="cl-agregat-vnitrni-popis"
+                  type="text"
+                  placeholder="Popis..."
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-tesneni-sbs" class="block text-xs font-semibold text-slate-600 mb-1">Těsnění vrat a zámky (SBS)</label>
-                <select id="cl-tesneni-sbs" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-tesneni-sbs" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Těsnění vrat a zámky (SBS)
+                </label>
+                <select
+                  id="cl-tesneni-sbs"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="Funkční">☐ Funkční</option>
                   <option value="Poškozeno">☐ Poškozeno</option>
                 </select>
               </div>
               <div>
-                <label for="cl-tesneni-sbs-popis" class="block text-xs font-semibold text-slate-600 mb-1">Popis (těsnění vrat a zámky SBS)</label>
-                <input id="cl-tesneni-sbs-popis" type="text" placeholder="Popis..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-tesneni-sbs-popis" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Popis (těsnění vrat a zámky SBS)
+                </label>
+                <input
+                  id="cl-tesneni-sbs-popis"
+                  type="text"
+                  placeholder="Popis..."
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-vule-panty" class="block text-xs font-semibold text-slate-600 mb-1">Vůle v pantech / zámcích</label>
-                <select id="cl-vule-panty" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-vule-panty" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Vůle v pantech / zámcích
+                </label>
+                <select
+                  id="cl-vule-panty"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="V normě">☐ V normě</option>
                   <option value="Vůle">☐ Vůle</option>
                 </select>
               </div>
               <div>
-                <label for="cl-vule-panty-pozn" class="block text-xs font-semibold text-slate-600 mb-1">Poznámka k vůli v pantech / zámcích</label>
-                <input id="cl-vule-panty-pozn" type="text" placeholder="Poznámka..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-vule-panty-pozn" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Poznámka k vůli v pantech / zámcích
+                </label>
+                <input
+                  id="cl-vule-panty-pozn"
+                  type="text"
+                  placeholder="Poznámka..."
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-prepažka" class="block text-xs font-semibold text-slate-600 mb-1">Dělicí přepážka (Multi-Temp)</label>
-                <select id="cl-prepažka" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-prepažka" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Dělicí přepážka (Multi-Temp)
+                </label>
+                <select
+                  id="cl-prepažka"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="Funkční">☐ Funkční</option>
                   <option value="Poškozeno">☐ Poškozeno</option>
@@ -546,12 +676,20 @@
                 </select>
               </div>
               <div>
-                <label for="cl-prepažka-pozn" class="block text-xs font-semibold text-slate-600 mb-1">Poznámka k dělicí přepážce</label>
-                <input id="cl-prepažka-pozn" type="text" placeholder="Poznámka..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-prepažka-pozn" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Poznámka k dělicí přepážce
+                </label>
+                <input
+                  id="cl-prepažka-pozn"
+                  type="text"
+                  placeholder="Poznámka..."
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
             </div>
           </div>
 
+          <!-- Sekce C: Kontrola příslušenství a dokladů -->
           <div class="pt-3 border-t border-slate-100 space-y-3">
             <button
               type="button"
@@ -565,47 +703,86 @@
             </button>
             <div id="sec-doklady" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label for="cl-datalogger" class="block text-xs font-semibold text-slate-600 mb-1">Datalogger / Teploměr</label>
-                <select id="cl-datalogger" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-datalogger" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Datalogger / Teploměr
+                </label>
+                <select
+                  id="cl-datalogger"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="OK">☐ OK</option>
                   <option value="Závada">☐ Závada</option>
                 </select>
               </div>
               <div>
-                <label for="cl-kalibrace-datum" class="block text-xs font-semibold text-slate-600 mb-1">Datum další kalibrace (datalogger / měřidla)</label>
-                <input id="cl-kalibrace-datum" type="date" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-kalibrace-datum" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Datum další kalibrace (datalogger / měřidla)
+                </label>
+                <input
+                  id="cl-kalibrace-datum"
+                  type="date"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-frc-stav" class="block text-xs font-semibold text-slate-600 mb-1">Certifikát FRC</label>
-                <select id="cl-frc-stav" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-frc-stav" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Certifikát FRC
+                </label>
+                <select
+                  id="cl-frc-stav"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="Přítomen">☐ Přítomen</option>
                   <option value="Chybí">☐ Chybí</option>
                 </select>
               </div>
               <div>
-                <label for="cl-frc-datum" class="block text-xs font-semibold text-slate-600 mb-1">Datum další kalibrace / platnosti FRC</label>
-                <input id="cl-frc-datum" type="date" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-frc-datum" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Datum další kalibrace / platnosti FRC
+                </label>
+                <input
+                  id="cl-frc-datum"
+                  type="date"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-tiskarna" class="block text-xs font-semibold text-slate-600 mb-1">Tiskárna / Papír</label>
-                <select id="cl-tiskarna" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-tiskarna" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Tiskárna / Papír
+                </label>
+                <select
+                  id="cl-tiskarna"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="OK">☐ OK</option>
                   <option value="Papír doplněný">☐ Papír doplněný</option>
                 </select>
               </div>
               <div>
-                <label for="cl-tiskarna-pozn" class="block text-xs font-semibold text-slate-600 mb-1">Poznámka k tiskárně / papíru</label>
-                <input id="cl-tiskarna-pozn" type="text" placeholder="Poznámka..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-tiskarna-pozn" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Poznámka k tiskárně / papíru
+                </label>
+                <input
+                  id="cl-tiskarna-pozn"
+                  type="text"
+                  placeholder="Poznámka..."
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-rozperne-stav" class="block text-xs font-semibold text-slate-600 mb-1">Rozpěrné tyče (stav)</label>
-                <select id="cl-rozperne-stav" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-rozperne-stav" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Rozpěrné tyče (stav)
+                </label>
+                <select
+                  id="cl-rozperne-stav"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="OK">☐ OK</option>
                   <option value="Špatný">☐ Špatný</option>
@@ -614,57 +791,122 @@
               </div>
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <label for="cl-rozperne-pocet" class="block text-xs font-semibold text-slate-600 mb-1">Počet tyčí (ks)</label>
-                  <input id="cl-rozperne-pocet" type="number" min="0" placeholder="ks" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label for="cl-rozperne-pocet" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Počet tyčí (ks)
+                  </label>
+                  <input
+                    id="cl-rozperne-pocet"
+                    type="number"
+                    min="0"
+                    placeholder="ks"
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
                 <div>
-                  <label for="cl-rozperne-doplneno" class="block text-xs font-semibold text-slate-600 mb-1">Doplněno (ks)</label>
-                  <input id="cl-rozperne-doplneno" type="number" min="0" placeholder="ks" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label for="cl-rozperne-doplneno" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Doplněno (ks)
+                  </label>
+                  <input
+                    id="cl-rozperne-doplneno"
+                    type="number"
+                    min="0"
+                    placeholder="ks"
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
               </div>
               <div class="sm:col-span-2">
-                <label for="cl-rozperne-pozn" class="block text-xs font-semibold text-slate-600 mb-1">Poznámka k rozpěrným tyčím</label>
-                <input id="cl-rozperne-pozn" type="text" placeholder="Poznámka..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-rozperne-pozn" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Poznámka k rozpěrným tyčím
+                </label>
+                <input
+                  id="cl-rozperne-pozn"
+                  type="text"
+                  placeholder="Poznámka..."
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-hasic1-stav" class="block text-xs font-semibold text-slate-600 mb-1">Hasicí přístroj 1: Tlak</label>
-                <select id="cl-hasic1-stav" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-hasic1-stav" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Hasicí přístroj 1: Tlak
+                </label>
+                <select
+                  id="cl-hasic1-stav"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="OK">☐ OK</option>
                   <option value="Špatný">☐ Špatný</option>
                 </select>
               </div>
               <div>
-                <label for="cl-hasic1-revize" class="block text-xs font-semibold text-slate-600 mb-1">Hasicí přístroj 1: Datum revize</label>
-                <input id="cl-hasic1-revize" type="date" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-hasic1-revize" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Hasicí přístroj 1: Datum revize
+                </label>
+                <input
+                  id="cl-hasic1-revize"
+                  type="date"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-hasic2-stav" class="block text-xs font-semibold text-slate-600 mb-1">Hasicí přístroj 2: Tlak</label>
-                <select id="cl-hasic2-stav" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-hasic2-stav" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Hasicí přístroj 2: Tlak
+                </label>
+                <select
+                  id="cl-hasic2-stav"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="OK">☐ OK</option>
                   <option value="Špatný">☐ Špatný</option>
                 </select>
               </div>
               <div>
-                <label for="cl-hasic2-revize" class="block text-xs font-semibold text-slate-600 mb-1">Hasicí přístroj 2: Datum revize</label>
-                <input id="cl-hasic2-revize" type="date" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-hasic2-revize" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Hasicí přístroj 2: Datum revize
+                </label>
+                <input
+                  id="cl-hasic2-revize"
+                  type="date"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-kliny-pocet" class="block text-xs font-semibold text-slate-600 mb-1">Zakládací klíny: Počet (ks)</label>
-                <input id="cl-kliny-pocet" type="number" min="0" placeholder="Počet ks" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-kliny-pocet" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Zakládací klíny: Počet (ks)
+                </label>
+                <input
+                  id="cl-kliny-pocet"
+                  type="number"
+                  min="0"
+                  placeholder="Počet ks"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
               <div>
-                <label for="cl-kliny-pozn" class="block text-xs font-semibold text-slate-600 mb-1">Poznámka k zakládacím klínům</label>
-                <input id="cl-kliny-pozn" type="text" placeholder="Poznámka..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-kliny-pozn" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Poznámka k zakládacím klínům
+                </label>
+                <input
+                  id="cl-kliny-pozn"
+                  type="text"
+                  placeholder="Poznámka..."
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-znaceni-stav" class="block text-xs font-semibold text-slate-600 mb-1">Značení mrtvé úhly / Odrazky / Zástěrky</label>
-                <select id="cl-znaceni-stav" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-znaceni-stav" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Značení mrtvé úhly / Odrazky / Zástěrky
+                </label>
+                <select
+                  id="cl-znaceni-stav"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="Kompletní">☐ Kompletní</option>
                   <option value="Poškozené">☐ Poškozené</option>
@@ -672,13 +914,25 @@
                 </select>
               </div>
               <div>
-                <label for="cl-znaceni-pozn" class="block text-xs font-semibold text-slate-600 mb-1">Poznámka ke značení / odrazkám / zástěrkám</label>
-                <input id="cl-znaceni-pozn" type="text" placeholder="Poznámka..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-znaceni-pozn" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Poznámka ke značení / odrazkám / zástěrkám
+                </label>
+                <input
+                  id="cl-znaceni-pozn"
+                  type="text"
+                  placeholder="Poznámka..."
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-zelena-karta-stav" class="block text-xs font-semibold text-slate-600 mb-1">Zelená karta</label>
-                <select id="cl-zelena-karta-stav" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-zelena-karta-stav" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Zelená karta
+                </label>
+                <select
+                  id="cl-zelena-karta-stav"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="Přítomná">☐ Přítomná</option>
                   <option value="Chybí">☐ Chybí</option>
@@ -686,78 +940,144 @@
                 </select>
               </div>
               <div>
-                <label for="cl-zelena-karta-platnost" class="block text-xs font-semibold text-slate-600 mb-1">Zelená karta: Datum platnosti</label>
-                <input id="cl-zelena-karta-platnost" type="date" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-zelena-karta-platnost" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Zelená karta: Datum platnosti
+                </label>
+                <input
+                  id="cl-zelena-karta-platnost"
+                  type="date"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-orv-stav" class="block text-xs font-semibold text-slate-600 mb-1">Technický průkaz (ORV)</label>
-                <select id="cl-orv-stav" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-orv-stav" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Technický průkaz (ORV)
+                </label>
+                <select
+                  id="cl-orv-stav"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="Přítomný">☐ Přítomný</option>
                   <option value="Chybí">☐ Chybí</option>
                 </select>
               </div>
               <div>
-                <label for="cl-stk-datum" class="block text-xs font-semibold text-slate-600 mb-1">Datum platnosti STK (ORV)</label>
-                <input id="cl-stk-datum" type="date" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-stk-datum" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Datum platnosti STK (ORV)
+                </label>
+                <input
+                  id="cl-stk-datum"
+                  type="date"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-ew-stav" class="block text-xs font-semibold text-slate-600 mb-1">EW tankovací karta</label>
-                <select id="cl-ew-stav" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-ew-stav" class="block text-xs font-semibold text-slate-600 mb-1">
+                  EW tankovací karta
+                </label>
+                <select
+                  id="cl-ew-stav"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="Přítomná">☐ Přítomná</option>
                   <option value="Chybí">☐ Chybí</option>
                 </select>
               </div>
               <div>
-                <label for="cl-ew-platnost" class="block text-xs font-semibold text-slate-600 mb-1">EW karta: Datum platnosti</label>
-                <input id="cl-ew-platnost" type="date" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-ew-platnost" class="block text-xs font-semibold text-slate-600 mb-1">
+                  EW karta: Datum platnosti
+                </label>
+                <input
+                  id="cl-ew-platnost"
+                  type="date"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-shell-stav" class="block text-xs font-semibold text-slate-600 mb-1">Shell tankovací karta</label>
-                <select id="cl-shell-stav" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-shell-stav" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Shell tankovací karta
+                </label>
+                <select
+                  id="cl-shell-stav"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="Přítomná">☐ Přítomná</option>
                   <option value="Chybí">☐ Chybí</option>
                 </select>
               </div>
               <div>
-                <label for="cl-shell-platnost" class="block text-xs font-semibold text-slate-600 mb-1">Shell karta: Datum platnosti</label>
-                <input id="cl-shell-platnost" type="date" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-shell-platnost" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Shell karta: Datum platnosti
+                </label>
+                <input
+                  id="cl-shell-platnost"
+                  type="date"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-q8-stav" class="block text-xs font-semibold text-slate-600 mb-1">Q8 tankovací karta</label>
-                <select id="cl-q8-stav" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-q8-stav" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Q8 tankovací karta
+                </label>
+                <select
+                  id="cl-q8-stav"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="Přítomná">☐ Přítomná</option>
                   <option value="Chybí">☐ Chybí</option>
                 </select>
               </div>
               <div>
-                <label for="cl-q8-platnost" class="block text-xs font-semibold text-slate-600 mb-1">Q8 karta: Datum platnosti</label>
-                <input id="cl-q8-platnost" type="date" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-q8-platnost" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Q8 karta: Datum platnosti
+                </label>
+                <input
+                  id="cl-q8-platnost"
+                  type="date"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-cepro-stav" class="block text-xs font-semibold text-slate-600 mb-1">Čepro tankovací karta</label>
-                <select id="cl-cepro-stav" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-cepro-stav" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Čepro tankovací karta
+                </label>
+                <select
+                  id="cl-cepro-stav"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="Přítomná">☐ Přítomná</option>
                   <option value="Chybí">☐ Chybí</option>
                 </select>
               </div>
               <div>
-                <label for="cl-cepro-platnost" class="block text-xs font-semibold text-slate-600 mb-1">Čepro karta: Datum platnosti</label>
-                <input id="cl-cepro-platnost" type="date" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label for="cl-cepro-platnost" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Čepro karta: Datum platnosti
+                </label>
+                <input
+                  id="cl-cepro-platnost"
+                  type="date"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
 
               <div>
-                <label for="cl-palety-stav" class="block text-xs font-semibold text-slate-600 mb-1">Palety EUR</label>
-                <select id="cl-palety-stav" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="cl-palety-stav" class="block text-xs font-semibold text-slate-600 mb-1">
+                  Palety EUR
+                </label>
+                <select
+                  id="cl-palety-stav"
+                  class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                   <option value="">— Nezadáno —</option>
                   <option value="Přítomné">☐ Přítomné</option>
                   <option value="Chybí">☐ Chybí</option>
@@ -765,17 +1085,33 @@
               </div>
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <label for="cl-palety-chybi" class="block text-xs font-semibold text-slate-600 mb-1">Chybí (ks)</label>
-                  <input id="cl-palety-chybi" type="number" min="0" placeholder="ks" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label for="cl-palety-chybi" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Chybí (ks)
+                  </label>
+                  <input
+                    id="cl-palety-chybi"
+                    type="number"
+                    min="0"
+                    placeholder="ks"
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
                 <div>
-                  <label for="cl-palety-pozn" class="block text-xs font-semibold text-slate-600 mb-1">Poznámka</label>
-                  <input id="cl-palety-pozn" type="text" placeholder="Poznámka..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label for="cl-palety-pozn" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Poznámka
+                  </label>
+                  <input
+                    id="cl-palety-pozn"
+                    type="text"
+                    placeholder="Poznámka..."
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
               </div>
             </div>
           </div>
 
+          <!-- Sekce D: Závěrečný soupis požadovaných oprav a vyhodnocení -->
           <div class="space-y-4 pt-3 border-t border-slate-100">
             <div>
               <label for="cl-vyhodnoceni" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
@@ -803,53 +1139,7 @@
               ></textarea>
             </div>
 
-            <div>
-              <label for="cl-poskozeni" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
-                Popis poškození karoserie / návěsu / oprav
-              </label>
-              <textarea
-                id="cl-poskozeni"
-                rows="2"
-                placeholder="např. Odřený pravý bok, utržená lišta, požadované opravy..."
-                class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              ></textarea>
-            </div>
-
-            <div>
-              <label for="cl-foto-input" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
-                Fotografie poškození / checklistu (fotoaparát v telefonu nebo soubor)
-              </label>
-              <input
-                id="cl-foto-input"
-                type="file"
-                accept="image/*"
-                capture="environment"
-                class="block w-full text-sm text-slate-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
-              />
-              <p class="text-[11px] text-slate-400 mt-1">
-                V telefonu otevře fotoaparát nebo galerii; snímek se automaticky zmenší pro rychlé sdílené uložení.
-              </p>
-
-              <div id="cl-foto-preview-wrap" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                <div class="flex items-center justify-between gap-2 mb-2">
-                  <span id="cl-foto-filename" class="text-xs font-medium text-slate-700 truncate"></span>
-                  <button
-                    id="cl-remove-foto"
-                    type="button"
-                    class="text-xs font-semibold text-rose-600 hover:text-rose-800 cursor-pointer"
-                  >
-                    Odebrat fotku
-                  </button>
-                </div>
-                <img
-                  id="cl-foto-preview"
-                  src=""
-                  alt="Náhled poškození nebo checklistu"
-                  class="max-h-52 rounded-lg object-contain border border-slate-200 bg-white cursor-pointer"
-                />
-              </div>
-            </div>
-
+            <!-- Volba synchronizace do Kontrola tankování -->
             <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
               <input
                 id="cl-sync-tankovani"
@@ -880,21 +1170,27 @@
           </div>
         </form>
 
+        <!-- Pravý sloupec: Přehled posledních zapsaných checklistů -->
         <div class="lg:col-span-5 bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200 flex flex-col">
           <div class="border-b border-slate-200 pb-4 mb-4">
             <h2 class="text-lg font-bold text-slate-900">Poslední zapsané checklisty</h2>
             <p class="text-xs text-slate-500 mt-0.5">
-              Sdílená historie protokolů včetně jména technika, času uložení a fotek.
+              Sdílená historie protokolů včetně jména technika a času uložení.
             </p>
           </div>
 
-          <div id="recent-checklists-list" class="space-y-3 flex-1 overflow-y-auto max-h-[760px] pr-1"></div>
+          <div id="recent-checklists-list" class="space-y-3 flex-1 overflow-y-auto max-h-[760px] pr-1">
+            <!-- Naplní JS -->
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ZÁLOŽKA 3: KONTROLA TANKOVÁNÍ -->
+    <!-- ========================================================= -->
+    <!-- ZÁLOŽKA 3: KONTROLA TANKOVÁNÍ                             -->
+    <!-- ========================================================= -->
     <section id="view-tankovani" class="hidden space-y-6">
+      <!-- Horní součty (4 dlaždice přesně dle zadání) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200">
           <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">CELKEM</p>
@@ -921,6 +1217,7 @@
         </div>
       </div>
 
+      <!-- Filtry a přidání SPZ pro tankování -->
       <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div class="flex flex-col sm:flex-row gap-3 flex-1">
           <input
@@ -948,6 +1245,7 @@
         </button>
       </div>
 
+      <!-- Samostatná tabulka Kontrola tankování -->
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
           <div>
@@ -970,11 +1268,13 @@
                 <th class="px-4 py-3 text-left font-semibold">Víčka nádrže + klíče</th>
                 <th class="px-4 py-3 text-left font-semibold">Stav motohodin</th>
                 <th class="px-4 py-3 text-left font-semibold">Příští kontrola (+30 dnů)</th>
-                <th class="px-4 py-3 text-left font-semibold">Zapsal / Foto</th>
+                <th class="px-4 py-3 text-left font-semibold">Zapsal</th>
                 <th class="px-4 py-3 text-right font-semibold">Akce</th>
               </tr>
             </thead>
-            <tbody id="tankovani-tbody" class="divide-y divide-slate-100 bg-white"></tbody>
+            <tbody id="tankovani-tbody" class="divide-y divide-slate-100 bg-white">
+              <!-- Naplní JS -->
+            </tbody>
           </table>
         </div>
       </div>
@@ -982,7 +1282,9 @@
 
   </main>
 
-  <!-- MODÁLNÍ OKNO: ÚPRAVA ZÁZNAMU KONTROLY / STK -->
+  <!-- ========================================================= -->
+  <!-- MODÁLNÍ OKNO: ÚPRAVA ZÁZNAMU KONTROLY / STK                  -->
+  <!-- ========================================================= -->
   <div id="modal-edit-kontrola" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl border border-slate-200 my-8">
       <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
@@ -1072,7 +1374,9 @@
     </div>
   </div>
 
-  <!-- MODÁLNÍ OKNO: ÚPRAVA ZÁZNAMU TANKOVÁNÍ -->
+  <!-- ========================================================= -->
+  <!-- MODÁLNÍ OKNO: ÚPRAVA ZÁZNAMU TANKOVÁNÍ                    -->
+  <!-- ========================================================= -->
   <div id="modal-edit-tankovani" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 my-8">
       <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
@@ -1132,12 +1436,14 @@
     </div>
   </div>
 
-  <!-- MODÁLNÍ OKNO: POTVRZENÍ OBNOVENÍ VÝCHOZÍCH DAT -->
+  <!-- ========================================================= -->
+  <!-- MODÁLNÍ OKNO: POTVRZENÍ OBNOVENÍ VÝCHOZÍCH DAT               -->
+  <!-- ========================================================= -->
   <div id="modal-confirm-reset" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4">
       <h3 class="text-lg font-bold text-slate-900">Obnovit výchozí CSV data?</h3>
       <p class="text-sm text-slate-600 leading-relaxed">
-        Tato akce přepíše aktuální sdílená data v databázi výchozími daty FRIGA 230. Úpravy provedené týmem budou nahrazeny.
+        Tato akce přepíše aktuální sdílená data v kolekcích kontroly, tankování a checklistů výchozími daty FRIGA 230. Úpravy provedené týmem budou nahrazeny.
       </p>
       <div class="flex justify-end gap-2 pt-2">
         <button id="cancel-reset-seed" type="button" class="px-4 py-2 rounded-xl text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 cursor-pointer">
@@ -1150,124 +1456,117 @@
     </div>
   </div>
 
-  <!-- MODÁLNÍ OKNO: ZVĚTŠENÍ FOTOGRAFIE CHECKLISTU -->
-  <div id="modal-photo-zoom" class="fixed inset-0 z-50 hidden bg-slate-950/85 items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl space-y-3">
-      <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
-        <h3 id="photo-zoom-title" class="text-sm sm:text-base font-bold text-slate-900 truncate">Fotografie checklistu</h3>
-        <button id="close-photo-zoom" type="button" class="text-slate-500 hover:text-slate-900 text-xl font-bold px-2 cursor-pointer">×</button>
-      </div>
-      <div class="flex items-center justify-center bg-slate-100 rounded-xl p-2 max-h-[75vh] overflow-auto">
-        <img id="photo-zoom-img" src="" alt="Zvětšená fotografie checklistu" class="max-h-[70vh] w-auto object-contain rounded-lg" />
-      </div>
-    </div>
-  </div>
-
-  <!-- APLIKAČNÍ LOGIKA A FIREBASE SYNCHRONIZACE -->
+  <!-- ========================================================= -->
+  <!-- APLIKAČNÍ LOGIKA A FIREBASE SYNCHRONIZACE                -->
+  <!-- ========================================================= -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      setDoc,
+      getDocs,
+      onSnapshot,
+      writeBatch
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+    // -----------------------------------------------------------
+    // 1. VÝCHOZÍ DATA FRIGA 230
+    // -----------------------------------------------------------
     const INITIAL_SEED_DATA = {
       kontrola: [
-        { spz: "5ST 7143", stav: "Probíhá", stk: "2027-02-01", datumKontroly: "2026-11-18", pristiKontrola: "2027-01-18", zavada: "", poskozeni: "Odřený pravý bok", motohodiny: "", frc: "2028-12-01", kalibrace: "", stavPneu: "A1 11mm - nové", tlakPneu: "Doplněno", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SZ 6675", stav: "Dokončeno", stk: "2027-06-01", datumKontroly: "2026-11-18", pristiKontrola: "2027-01-18", zavada: "", poskozeni: "Utržená p.p. lišta rohu návěsu", motohodiny: 5178, frc: "2029-11-01", kalibrace: "", stavPneu: "A2 4mm - 8mm", tlakPneu: "V pořádku", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SE 9348", stav: "Probíhá", stk: "2027-07-01", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "Doplnit zelenou kartu", motohodiny: "", frc: "2029-06-01", kalibrace: "2027-09-01", stavPneu: "A1 11mm - nové", tlakPneu: "Provést kontrolu", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SE 9359", stav: "Dokončeno", stk: "2027-07-14", datumKontroly: "2026-11-19", pristiKontrola: "2027-01-19", zavada: "Zástěrky + schůdky oprava", poskozeni: "", motohodiny: 1960, frc: "2029-06-01", kalibrace: "", stavPneu: "A2 4mm - 8mm", tlakPneu: "Doplněno", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "2SI 7530", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "2SI 7531", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SB 9344", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SB 9345", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SB 9347", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SB 9348", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SB 9349", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SB 9429", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SK 9314", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SK 9402", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SK 9403", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SV 7691", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SV 7692", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SY 1776", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SY 9274", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SY 9309", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SY 9310", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SY 9311", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "4SU 5018", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SD 6120", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SD 6121", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SD 6122", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SD 6123", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SL 1548", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SL 1549", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SN 7783", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SN 7784", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SE 9347", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SE 9356", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SE 9357", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SE 9358", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SF 0541", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SF 0542", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SF 0588", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SF 0601", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SF 0610", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SV 0783", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" }
+        { spz: "5ST 7143", stav: "Probíhá", stk: "2027-02-01", datumKontroly: "2026-11-18", pristiKontrola: "2027-01-18", zavada: "", poskozeni: "Odřený pravý bok", motohodiny: "", frc: "2028-12-01", kalibrace: "", stavPneu: "A1 11mm - nové", tlakPneu: "Doplněno", zapsal: "Původní evidence" },
+        { spz: "3SZ 6675", stav: "Dokončeno", stk: "2027-06-01", datumKontroly: "2026-11-18", pristiKontrola: "2027-01-18", zavada: "", poskozeni: "Utržená p.p. lišta rohu návěsu", motohodiny: 5178, frc: "2029-11-01", kalibrace: "", stavPneu: "A2 4mm - 8mm", tlakPneu: "V pořádku", zapsal: "Původní evidence" },
+        { spz: "6SE 9348", stav: "Probíhá", stk: "2027-07-01", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "Doplnit zelenou kartu", motohodiny: "", frc: "2029-06-01", kalibrace: "2027-09-01", stavPneu: "A1 11mm - nové", tlakPneu: "Provést kontrolu", zapsal: "Původní evidence" },
+        { spz: "6SE 9359", stav: "Dokončeno", stk: "2027-07-14", datumKontroly: "2026-11-19", pristiKontrola: "2027-01-19", zavada: "Zástěrky + schůdky oprava", poskozeni: "", motohodiny: 1960, frc: "2029-06-01", kalibrace: "", stavPneu: "A2 4mm - 8mm", tlakPneu: "Doplněno", zapsal: "Původní evidence" },
+        { spz: "2SI 7530", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "2SI 7531", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SB 9344", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SB 9345", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SB 9347", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SB 9348", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SB 9349", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SB 9429", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SK 9314", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SK 9402", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SK 9403", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SV 7691", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SV 7692", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SY 1776", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SY 9274", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SY 9309", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SY 9310", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "3SY 9311", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "4SU 5018", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "5SD 6120", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "5SD 6121", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "5SD 6122", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "5SD 6123", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "5SL 1548", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "5SL 1549", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "5SN 7783", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "5SN 7784", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "6SE 9347", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "6SE 9356", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "6SE 9357", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "6SE 9358", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "6SF 0541", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "6SF 0542", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "6SF 0588", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "6SF 0601", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "6SF 0610", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" },
+        { spz: "6SV 0783", stav: "Nezahájeno", stk: "", datumKontroly: "", pristiKontrola: "", zavada: "", poskozeni: "", motohodiny: "", frc: "", kalibrace: "", stavPneu: "", tlakPneu: "", zapsal: "Původní evidence" }
       ],
       tankovani: [
-        { spz: "2SI 7530", stav: "Měsíční kontrola", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "2026-02-01", vickaKlice: "V pořádku", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "2SI 7531", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SB 9344", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SB 9345", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SB 9347", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SB 9348", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SB 9349", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SB 9429", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SK 9314", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SK 9402", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SK 9403", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SV 7691", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SV 7692", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SY 1776", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SY 9274", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SY 9309", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SY 9310", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SY 9311", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "3SZ 6675", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "4SU 5018", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SD 6120", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SD 6121", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SD 6122", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SD 6123", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SL 1548", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SL 1549", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SN 7783", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5SN 7784", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "5ST 7143", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SE 9347", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SE 9348", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SE 9356", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SE 9357", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SE 9358", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SE 9359", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SF 0541", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SF 0542", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SF 0588", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SF 0601", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SF 0610", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" },
-        { spz: "6SV 0783", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence", fotkaChecklistu: "", nazevFotky: "" }
+        { spz: "2SI 7530", stav: "Měsíční kontrola", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "2026-02-01", vickaKlice: "V pořádku", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "2SI 7531", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SB 9344", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SB 9345", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SB 9347", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SB 9348", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SB 9349", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SB 9429", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SK 9314", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SK 9402", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SK 9403", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SV 7691", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SV 7692", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SY 1776", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SY 9274", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SY 9309", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SY 9310", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SY 9311", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "3SZ 6675", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "4SU 5018", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "5SD 6120", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "5SD 6121", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "5SD 6122", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "5SD 6123", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "5SL 1548", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "5SL 1549", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "5SN 7783", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "5SN 7784", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "5ST 7143", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "6SE 9347", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "6SE 9348", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "6SE 9356", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "6SE 9357", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "6SE 9358", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "6SE 9359", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "6SF 0541", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "6SF 0542", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "6SF 0588", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "6SF 0601", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "6SF 0610", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" },
+        { spz: "6SV 0783", stav: "Nezahájeno", datumKontroly: "", pristiKontrola: "", hladinaPaliva: "", vickaKlice: "", motohodiny: "", zapsal: "Původní evidence" }
       ]
     };
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBAGl9T8gINNjgKY8hZagItzNMTkn5_BYo",
-      authDomain: "navesy-230.firebaseapp.com",
-      projectId: "navesy-230",
-      storageBucket: "navesy-230.firebasestorage.app",
-      messagingSenderId: "609525524829",
-      appId: "1:609525524829:web:1a8f50e5cc92eca63520b4",
-      measurementId: "G-0552WL878N"
-    };
-
+    // -----------------------------------------------------------
+    // 2. POMOCNÉ FUNKCE PRO FORMÁTOVÁNÍ, DATUMY A HLÍDÁNÍ TERMÍNŮ
+    // -----------------------------------------------------------
     function escapeHtml(val) {
       if (val === null || val === undefined) return "";
       return String(val)
@@ -1353,19 +1652,9 @@
       }, 3600);
     }
 
-    function setFirebaseDiagnostic(msg) {
-      const banner = document.getElementById("firebase-diag-banner");
-      const text = document.getElementById("firebase-diag-text");
-      if (!banner || !text) return;
-      if (!msg) {
-        banner.classList.add("hidden");
-        text.textContent = "";
-      } else {
-        text.textContent = msg;
-        banner.classList.remove("hidden");
-      }
-    }
-
+    /**
+     * Vyhodnotí stav hlídání STK, dalších termínů a závad pro řazení a KPI.
+     */
     function evaluateKontrolaItem(item) {
       const stkDays = daysUntilIso(item.stk);
       const pristiDays = daysUntilIso(item.pristiKontrola);
@@ -1486,6 +1775,9 @@
       };
     }
 
+    // -----------------------------------------------------------
+    // 3. STAV APLIKACE, LOKÁLNÍ ÚLOŽIŠTĚ A FIREBASE SYNCHRONIZACE
+    // -----------------------------------------------------------
     const WHEEL_POSITIONS = [
       "1. náprava – Levá strana",
       "1. náprava – Pravá strana",
@@ -1504,19 +1796,26 @@
       kontrola: [],
       tankovani: [],
       checklists: [],
-      uploadedPhotoDataUrl: "",
-      uploadedPhotoName: "",
       isSeeding: false,
-      firebaseReady: true,
-      storageMode: "local"
+      firebaseReady: false,
+      storageMode: "memory"
     };
 
-    let firebaseApp = null;
+    const appId = typeof __app_id !== "undefined" && __app_id ? __app_id : "friga-230-default";
+    let firebaseConfig = null;
+    try {
+      if (typeof __firebase_config !== "undefined" && __firebase_config) {
+        firebaseConfig = typeof __firebase_config === "string" ? JSON.parse(__firebase_config) : __firebase_config;
+      }
+    } catch (err) {
+      console.error("Chyba při parsování __firebase_config:", err);
+    }
+
     let db = null;
     let auth = null;
-    let docRef = null;
-    let unsubscribeSnapshot = null;
-    let ignoreNextSnapshot = false;
+    let kontrolaColRef = null;
+    let tankovaniColRef = null;
+    let checklistsColRef = null;
 
     function renderWheelMeasurementRows() {
       const tbody = document.getElementById("wheel-measurements-tbody");
@@ -1524,19 +1823,19 @@
       tbody.innerHTML = WHEEL_POSITIONS.map((pos, idx) => `
         <tr>
           <td class="px-2.5 py-1.5 font-medium text-slate-800 whitespace-nowrap">${escapeHtml(pos)}</td>
-          <td class="px-2.5 py-1.5">
+          <td class="px-2 py-1.5">
             <input type="number" step="0.1" min="0" data-wheel-idx="${idx}" data-wheel-field="dezen" placeholder="mm"
               class="w-20 rounded-lg border border-slate-300 px-2 py-1 text-xs" />
           </td>
-          <td class="px-2.5 py-1.5">
+          <td class="px-2 py-1.5">
             <input type="number" step="0.1" min="0" data-wheel-idx="${idx}" data-wheel-field="tlak" placeholder="bar"
               class="w-20 rounded-lg border border-slate-300 px-2 py-1 text-xs" />
           </td>
-          <td class="px-2.5 py-1.5">
+          <td class="px-2 py-1.5">
             <input type="text" data-wheel-idx="${idx}" data-wheel-field="znacka" placeholder="Značka"
               class="w-24 rounded-lg border border-slate-300 px-2 py-1 text-xs" />
           </td>
-          <td class="px-2.5 py-1.5">
+          <td class="px-2 py-1.5">
             <input type="text" data-wheel-idx="${idx}" data-wheel-field="stav" placeholder="Stav / poškození"
               class="w-36 rounded-lg border border-slate-300 px-2 py-1 text-xs" />
           </td>
@@ -1630,125 +1929,166 @@
       }
     }
 
-    async function persistAllToCloud(overwrite = false) {
-      saveLocalState();
-      if (state.storageMode !== "firebase" || !docRef) {
-        return;
-      }
-      ignoreNextSnapshot = true;
-      try {
-        await setDoc(
-          docRef,
-          {
-            kontrola: state.kontrola,
-            tankovani: state.tankovani,
-            checklists: state.checklists,
-            updatedAtMs: Date.now()
-          },
-          overwrite ? {} : { merge: true }
-        );
-      } catch (err) {
-        ignoreNextSnapshot = false;
-        state.storageMode = "local";
-        setSyncStatus("local", "Uloženo v prohlížeči");
-        setFirebaseDiagnostic(`Firebase zápis selhal (${err?.code || err?.message || "chyba"}). Změny se ukládají v tomto prohlížeči.`);
-      }
-    }
-
     async function initFirebaseAndListeners() {
-      loadLocalState(false);
-      state.firebaseReady = true;
-      renderAll();
-
-      if (unsubscribeSnapshot) {
-        try { unsubscribeSnapshot(); } catch (_) {}
-        unsubscribeSnapshot = null;
-      }
-
       try {
         if (!firebaseConfig || !firebaseConfig.apiKey) {
           state.storageMode = "local";
+          state.firebaseReady = true;
+          loadLocalState(false);
           setSyncStatus("local", "Uloženo v prohlížeči");
+          renderAll();
+          showToast("Běží v režimu okamžitého testování (uloženo v prohlížeči).", "info");
           return;
         }
 
-        if (!firebaseApp) {
-          firebaseApp = initializeApp(firebaseConfig);
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        setSyncStatus("syncing", "Přihlašování...");
+        if (typeof __initial_auth_token !== "undefined" && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
         }
-        auth = getAuth(firebaseApp);
-        db = getFirestore(firebaseApp);
-        docRef = doc(db, "fleet", "friga-230");
 
-        window.frigaDb = db;
-        window.frigaDocRef = docRef;
-        window.frigaSetDoc = setDoc;
-        window.frigaOnSnapshot = onSnapshot;
-
-        setSyncStatus("syncing", "Připojování k Firebase...");
-        await signInAnonymously(auth);
-
+        state.firebaseReady = true;
         state.storageMode = "firebase";
-        setFirebaseDiagnostic("");
         setSyncStatus("online", "Sdíleno (Firebase online)");
 
-        unsubscribeSnapshot = onSnapshot(
-          docRef,
-          async (snap) => {
-            if (ignoreNextSnapshot) {
-              ignoreNextSnapshot = false;
-              return;
-            }
-            if (snap.exists()) {
-              const data = snap.data() || {};
-              if (Array.isArray(data.kontrola) && data.kontrola.length > 0) {
-                state.kontrola = data.kontrola;
-                state.tankovani = Array.isArray(data.tankovani) ? data.tankovani : [];
-                state.checklists = Array.isArray(data.checklists) ? data.checklists : [];
-                saveLocalState();
-                renderAll();
-                return;
-              }
-            }
-            if (!state.isSeeding) {
-              state.isSeeding = true;
-              const seeded = buildSeedCollections();
-              state.kontrola = seeded.kontrola;
-              state.tankovani = seeded.tankovani;
-              state.checklists = seeded.checklists;
-              await persistAllToCloud(true);
-              renderAll();
-              state.isSeeding = false;
-            }
+        kontrolaColRef = collection(db, "artifacts", appId, "public", "data", "friga230_kontrola");
+        tankovaniColRef = collection(db, "artifacts", appId, "public", "data", "friga230_tankovani");
+        checklistsColRef = collection(db, "artifacts", appId, "public", "data", "friga230_checklists");
+
+        await seedIfEmpty();
+
+        onSnapshot(
+          kontrolaColRef,
+          (snapshot) => {
+            const rows = [];
+            snapshot.forEach((docSnap) => {
+              rows.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            state.kontrola = rows;
+            renderAll();
           },
           (error) => {
-            console.error("Chyba odběru dat z Firestore:", error);
-            state.storageMode = "local";
-            setSyncStatus("local", "Uloženo v prohlížeči");
-            setFirebaseDiagnostic(`Firebase Firestore odpojen (${error?.code || error?.message || "chyba"}). Aplikace jede lokálně v prohlížeči.`);
+            console.error("Chyba odběru kontroly:", error);
+            showToast("Nepodařilo se načíst data kontroly a STK.", "error");
+          }
+        );
+
+        onSnapshot(
+          tankovaniColRef,
+          (snapshot) => {
+            const rows = [];
+            snapshot.forEach((docSnap) => {
+              rows.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            state.tankovani = rows;
             renderAll();
+          },
+          (error) => {
+            console.error("Chyba odběru tankování:", error);
+            showToast("Nepodařilo se načíst data kontroly tankování.", "error");
+          }
+        );
+
+        onSnapshot(
+          checklistsColRef,
+          (snapshot) => {
+            const rows = [];
+            snapshot.forEach((docSnap) => {
+              rows.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            rows.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+            state.checklists = rows;
+            renderRecentChecklists();
+          },
+          (error) => {
+            console.error("Chyba odběru checklistů:", error);
+            showToast("Nepodařilo se načíst historii checklistů.", "error");
           }
         );
       } catch (err) {
         console.error("Chyba inicializace Firebase:", err);
-        state.storageMode = "local";
-        setSyncStatus("local", "Uloženo v prohlížeči");
-        setFirebaseDiagnostic(`Firebase není dostupný (${err?.code || err?.message || "připojení selhalo"}). Změny se ukládají v prohlížeči.`);
-        renderAll();
+        setSyncStatus("error", "Offline / chyba připojení");
+        showToast("Chyba při připojení k databázi.", "error");
+      }
+    }
+
+    async function seedIfEmpty() {
+      if (state.isSeeding || !kontrolaColRef || !tankovaniColRef) return;
+      state.isSeeding = true;
+      try {
+        const [kSnap, tSnap] = await Promise.all([getDocs(kontrolaColRef), getDocs(tankovaniColRef)]);
+        if (kSnap.empty && tSnap.empty) {
+          setSyncStatus("syncing", "Naplňování výchozích dat...");
+          await writeSeedData(false);
+          setSyncStatus("online", "Sdíleno (Firebase online)");
+        }
+      } catch (err) {
+        console.error("Chyba při kontrole prázdných kolekcí:", err);
+      } finally {
+        state.isSeeding = false;
       }
     }
 
     async function writeSeedData(isReset = false) {
+      if (state.storageMode === "local" || !db || !kontrolaColRef || !tankovaniColRef) {
+        loadLocalState(true);
+        renderAll();
+        setSyncStatus("local", "Uloženo v prohlížeči");
+        showToast(isReset ? "Výchozí CSV data byla obnovena." : "Načtena výchozí data FRIGA 230.", "success");
+        return;
+      }
+
       setSyncStatus("syncing", "Ukládání dat...");
-      const seeded = buildSeedCollections();
-      state.kontrola = seeded.kontrola;
-      state.tankovani = seeded.tankovani;
-      state.checklists = seeded.checklists;
-      await persistAllToCloud(true);
-      renderAll();
-      setSyncStatus(state.storageMode === "firebase" ? "online" : "local", state.storageMode === "firebase" ? "Sdíleno (Firebase online)" : "Uloženo v prohlížeči");
+
+      if (isReset) {
+        const [kExisting, tExisting, cExisting] = await Promise.all([
+          getDocs(kontrolaColRef),
+          getDocs(tankovaniColRef),
+          checklistsColRef ? getDocs(checklistsColRef) : Promise.resolve({ docs: [] })
+        ]);
+
+        const allDocs = [
+          ...kExisting.docs.map((d) => d.ref),
+          ...tExisting.docs.map((d) => d.ref),
+          ...(cExisting.docs ? cExisting.docs.map((d) => d.ref) : [])
+        ];
+
+        for (let i = 0; i < allDocs.length; i += 450) {
+          const batch = writeBatch(db);
+          allDocs.slice(i, i + 450).forEach((ref) => batch.delete(ref));
+          await batch.commit();
+        }
+      }
+
+      const ops = [];
+      INITIAL_SEED_DATA.kontrola.forEach((item, idx) => {
+        const docId = `K_${String(idx + 1).padStart(3, "0")}_${slugifySpz(item.spz)}`;
+        ops.push({ ref: doc(kontrolaColRef, docId), data: { ...item } });
+      });
+
+      INITIAL_SEED_DATA.tankovani.forEach((item, idx) => {
+        const docId = `T_${String(idx + 1).padStart(3, "0")}_${slugifySpz(item.spz)}`;
+        ops.push({ ref: doc(tankovaniColRef, docId), data: { ...item } });
+      });
+
+      for (let i = 0; i < ops.length; i += 450) {
+        const batch = writeBatch(db);
+        ops.slice(i, i + 450).forEach((op) => batch.set(op.ref, op.data));
+        await batch.commit();
+      }
+
+      setSyncStatus("online", "Sdíleno (Firebase online)");
       showToast(isReset ? "Výchozí CSV data byla obnovena." : "Načtena výchozí data FRIGA 230.", "success");
     }
 
+    // -----------------------------------------------------------
+    // 4. VYKRESLOVÁNÍ ZÁLOŽEK, KPI A TABULEK
+    // -----------------------------------------------------------
     function renderAll() {
       populateSpzDatalist();
       if (state.activeTab === "kontrola") {
@@ -1856,15 +2196,8 @@
             <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(item.stavPneu || "—")}${item.tlakPneu ? ` · ${escapeHtml(item.tlakPneu)}` : ""}</div>
           `;
 
-          const photoBtnHtml = item.fotkaChecklistu
-            ? `<button type="button" data-photo-id="${escapeHtml(item.id)}" data-photo-source="kontrola" class="btn-view-photo inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 underline cursor-pointer mt-0.5">
-                 Zobrazit foto
-               </button>`
-            : "";
-
           const zapsalHtml = `
             <div class="text-xs font-medium text-slate-700">${escapeHtml(item.zapsal || "—")}</div>
-            ${photoBtnHtml}
           `;
 
           return `
@@ -1914,24 +2247,6 @@
           const id = btn.getAttribute("data-edit-kontrola-id");
           const row = state.kontrola.find((r) => r.id === id);
           if (row) openKontrolaModal(row, false);
-        });
-      });
-
-      document.querySelectorAll(".btn-view-photo").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const id = btn.getAttribute("data-photo-id");
-          const source = btn.getAttribute("data-photo-source");
-          if (source === "checklist") {
-            const cl = state.checklists.find((c) => c.id === id);
-            if (cl && cl.fotkaChecklistu) {
-              openPhotoModal(cl.fotkaChecklistu, `Checklist ${cl.spz} (${cl.nazevFotky || "foto"})`);
-            }
-          } else {
-            const row = state.kontrola.find((r) => r.id === id);
-            if (row && row.fotkaChecklistu) {
-              openPhotoModal(row.fotkaChecklistu, `Checklist ${row.spz} (${row.nazevFotky || "foto"})`);
-            }
-          }
         });
       });
     }
@@ -2065,21 +2380,8 @@
               ? "bg-amber-100 text-amber-800 border-amber-200"
               : "bg-emerald-100 text-emerald-800 border-emerald-200";
 
-          const thumbHtml = cl.fotkaChecklistu
-            ? `<img
-                 src="${cl.fotkaChecklistu}"
-                 alt="Foto checklistu ${escapeHtml(cl.spz)}"
-                 data-photo-id="${escapeHtml(cl.id)}"
-                 data-photo-source="checklist"
-                 class="btn-view-photo w-20 h-20 object-cover rounded-xl border border-slate-200 shrink-0 cursor-pointer hover:opacity-90"
-               />`
-            : `<div class="w-20 h-20 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-[11px] text-slate-400 shrink-0 text-center px-1">
-                 Bez fotky
-               </div>`;
-
           return `
             <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 flex gap-3.5 items-start">
-              ${thumbHtml}
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center justify-between gap-1">
                   <span class="font-bold text-sm text-slate-900">${escapeHtml(cl.spz)}</span>
@@ -2093,8 +2395,7 @@
                   ${cl.stkDatum ? ` · STK: <strong>${formatCzDate(cl.stkDatum)}</strong>` : ""}
                   ${cl.mth ? ` · MTH: <strong>${escapeHtml(cl.mth)}</strong>` : ""}
                 </p>
-                ${cl.zavady ? `<p class="text-xs text-rose-700 mt-1 break-words">Závada: ${escapeHtml(cl.zavady)}</p>` : ""}
-                ${cl.poskozeni ? `<p class="text-xs text-amber-800 mt-0.5 break-words">Poškození/opravy: ${escapeHtml(cl.poskozeni)}</p>` : ""}
+                ${cl.soupisOprav ? `<p class="text-xs text-amber-800 mt-1 break-words">Opravy / závady: ${escapeHtml(cl.soupisOprav)}</p>` : ""}
                 <p class="text-[11px] text-slate-400 mt-1.5">
                   Zapsal: <strong class="text-slate-600">${escapeHtml(cl.technik || "—")}</strong>${savedTime ? ` · ${escapeHtml(savedTime)}` : ""}
                 </p>
@@ -2107,34 +2408,15 @@
       bindKontrolaRowEvents();
     }
 
-    function compressImageFile(file, maxWidth = 1024, quality = 0.65) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const img = new Image();
-          img.onload = () => {
-            let { width, height } = img;
-            if (width > maxWidth) {
-              height = Math.round((height * maxWidth) / width);
-              width = maxWidth;
-            }
-            const canvas = document.createElement("canvas");
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL("image/jpeg", quality));
-          };
-          img.onerror = () => reject(new Error("Nepodařilo se načíst obrázek."));
-          img.src = event.target.result;
-        };
-        reader.onerror = () => reject(new Error("Chyba při čtení souboru."));
-        reader.readAsDataURL(file);
-      });
-    }
-
+    // -----------------------------------------------------------
+    // 5. ZPRACOVÁNÍ CHECKLISTU
+    // -----------------------------------------------------------
     async function handleChecklistSubmit(e) {
       e.preventDefault();
+      if (!state.firebaseReady) {
+        showToast("Počkejte prosím na spuštění aplikace.", "warning");
+        return;
+      }
 
       const spz = document.getElementById("cl-spz").value.trim().toUpperCase();
       const technik = document.getElementById("cl-technik").value.trim() || state.currentUser || "Technik";
@@ -2203,7 +2485,6 @@
 
       const vyhodnoceni = document.getElementById("cl-vyhodnoceni").value;
       const soupisOprav = document.getElementById("cl-soupis-oprav").value.trim();
-      const manualPoskozeni = document.getElementById("cl-poskozeni").value.trim();
       const syncTankovani = document.getElementById("cl-sync-tankovani").checked;
 
       if (!spz) {
@@ -2215,94 +2496,14 @@
       localStorage.setItem("friga230_technik_name", technik);
       document.getElementById("current-user-input").value = technik;
 
+      const isLocal = state.storageMode === "local" || !kontrolaColRef || !tankovaniColRef || !checklistsColRef;
       setSyncStatus("syncing", "Ukládání checklistu...");
 
       try {
         const nowMs = Date.now();
         const checklistDocId = `CL_${nowMs}_${slugifySpz(spz)}`;
 
-        const existingKontrola = state.kontrola.find(
-          (r) => String(r.spz || "").trim().toUpperCase() === spz
-        );
-
-        const hasProblem =
-          Boolean(soupisOprav) ||
-          Boolean(manualPoskozeni) ||
-          kotouce === "Poškozené" ||
-          vzduch === "Únik" ||
-          mechy === "Poškozené" ||
-          vnitrniPlast === "Poškozeno" ||
-          vnejsiPlast === "Poškozeno" ||
-          agregatVnitrni === "Poškozeno" ||
-          tesneniSbs === "Poškozeno" ||
-          vulePanty === "Vůle" ||
-          prepazka === "Poškozeno" ||
-          datalogger === "Závada" ||
-          frcStav === "Chybí" ||
-          rozperneStav === "Špatný" ||
-          hasic1Stav === "Špatný" ||
-          hasic2Stav === "Špatný" ||
-          znaceniStav === "Poškozené" ||
-          zelenaKartaStav === "Chybí" ||
-          orvStav === "Chybí" ||
-          ewStav === "Chybí" ||
-          shellStav === "Chybí" ||
-          q8Stav === "Chybí" ||
-          ceproStav === "Chybí" ||
-          paletyStav === "Chybí" ||
-          vyhodnoceni === "Neschopen provozu / Odstaveno" ||
-          vyhodnoceni === "Schopen s podmínkou";
-
-        const nextStav = hasProblem ? "Probíhá" : "Dokončeno";
-
-        let mergedZavada = existingKontrola ? existingKontrola.zavada || "" : "";
-        let mergedPoskozeni = existingKontrola ? existingKontrola.poskozeni || "" : "";
-
-        const autoZavady = [];
-        if (kotouce === "Poškozené") autoZavady.push(`Brzdové kotouče: ${kotoucePozn || "Poškozené"}`);
-        if (vzduch === "Únik") autoZavady.push(`Vzduch: ${vzduchPozn || "Únik"}`);
-        if (mechy === "Poškozené") autoZavady.push(`Měchy: ${mechyPozn || "Poškozené"}`);
-        if (agregatVnitrni === "Poškozeno") autoZavady.push(`Agregát: ${agregatVnitrniPopis || "Poškozeno"}`);
-        if (tesneniSbs === "Poškozeno") autoZavady.push(`Těsnění/zámky SBS: ${tesneniSbsPopis || "Poškozeno"}`);
-        if (vulePanty === "Vůle") autoZavady.push(`Vůle panty/zámky: ${vulePantyPozn || "Vůle"}`);
-        if (datalogger === "Závada") autoZavady.push("Datalogger / Teploměr: Závada");
-        if (hasic1Stav === "Špatný") autoZavady.push("Hasicí přístroj 1: Špatný tlak");
-        if (hasic2Stav === "Špatný") autoZavady.push("Hasicí přístroj 2: Špatný tlak");
-
-        if (autoZavady.length > 0) {
-          const zText = autoZavady.join("; ");
-          mergedZavada = mergedZavada ? `${mergedZavada}; ${zText}` : zText;
-        }
-
-        const autoPoskozeni = [];
-        if (manualPoskozeni) autoPoskozeni.push(manualPoskozeni);
-        if (soupisOprav) autoPoskozeni.push(soupisOprav);
-        if (vnitrniPlast === "Poškozeno") autoPoskozeni.push(`Vnitřní plášť/podlaha: ${vnitrniPlastPopis || "Poškozeno"}`);
-        if (vnejsiPlast === "Poškozeno") autoPoskozeni.push(`Vnější plášť/střecha: ${vnejsiPlastPopis || "Poškozeno"}`);
-        if (prepazka === "Poškozeno") autoPoskozeni.push(`Přepážka Multi-Temp: ${prepazkaPozn || "Poškozeno"}`);
-        if (znaceniStav === "Poškozené") autoPoskozeni.push(`Značení/zástěrky: ${znaceniPozn || "Poškozené"}`);
-        if (frcStav === "Chybí") autoPoskozeni.push("Chybí certifikát FRC");
-        if (zelenaKartaStav === "Chybí") autoPoskozeni.push("Chybí zelená karta");
-        if (orvStav === "Chybí") autoPoskozeni.push("Chybí ORV");
-        if (paletyStav === "Chybí") autoPoskozeni.push(`Chybí palety EUR${paletyChybi ? ` (${paletyChybi} ks)` : ""}`);
-
-        wheels.forEach((w) => {
-          if (w.stav) {
-            autoPoskozeni.push(`${w.pozice}: ${w.stav}`);
-          }
-        });
-
-        if (autoPoskozeni.length > 0) {
-          const pText = autoPoskozeni.join("; ");
-          mergedPoskozeni = mergedPoskozeni ? `${mergedPoskozeni}; ${pText}` : pText;
-        }
-
-        const dezens = wheels.map((w) => parseFloat(w.dezen)).filter((n) => !Number.isNaN(n));
-        const minDezenStr = dezens.length > 0 ? `Min. dezén ${Math.min(...dezens)} mm` : "";
-        const stavPneuSummary = minDezenStr || (existingKontrola ? existingKontrola.stavPneu || "" : "");
-
         const checklistRecord = {
-          id: checklistDocId,
           spz,
           technik,
           datumProhlidky,
@@ -2366,17 +2567,94 @@
           paletyPozn,
           vyhodnoceni,
           soupisOprav,
-          poskozeni: mergedPoskozeni,
-          zavady: mergedZavada,
-          fotkaChecklistu: state.uploadedPhotoDataUrl || "",
-          nazevFotky: state.uploadedPhotoName || "",
           createdAtMs: nowMs
         };
 
-        state.checklists = [checklistRecord, ...state.checklists];
+        if (!isLocal) {
+          await setDoc(doc(checklistsColRef, checklistDocId), checklistRecord);
+        } else {
+          state.checklists = [{ id: checklistDocId, ...checklistRecord }, ...state.checklists];
+        }
+
+        const existingKontrola = state.kontrola.find(
+          (r) => String(r.spz || "").trim().toUpperCase() === spz
+        );
+
+        const hasProblem =
+          Boolean(soupisOprav) ||
+          kotouce === "Poškozené" ||
+          vzduch === "Únik" ||
+          mechy === "Poškozené" ||
+          vnitrniPlast === "Poškozeno" ||
+          vnejsiPlast === "Poškozeno" ||
+          agregatVnitrni === "Poškozeno" ||
+          tesneniSbs === "Poškozeno" ||
+          vulePanty === "Vůle" ||
+          prepazka === "Poškozeno" ||
+          datalogger === "Závada" ||
+          frcStav === "Chybí" ||
+          rozperneStav === "Špatný" ||
+          hasic1Stav === "Špatný" ||
+          hasic2Stav === "Špatný" ||
+          znaceniStav === "Poškozené" ||
+          zelenaKartaStav === "Chybí" ||
+          orvStav === "Chybí" ||
+          ewStav === "Chybí" ||
+          shellStav === "Chybí" ||
+          q8Stav === "Chybí" ||
+          ceproStav === "Chybí" ||
+          paletyStav === "Chybí" ||
+          vyhodnoceni === "Neschopen provozu / Odstaveno" ||
+          vyhodnoceni === "Schopen s podmínkou";
+
+        const nextStav = hasProblem ? "Probíhá" : "Dokončeno";
+
+        let mergedZavada = existingKontrola ? existingKontrola.zavada || "" : "";
+        let mergedPoskozeni = existingKontrola ? existingKontrola.poskozeni || "" : "";
+
+        const autoZavady = [];
+        if (kotouce === "Poškozené") autoZavady.push(`Brzdové kotouče: ${kotoucePozn || "Poškozené"}`);
+        if (vzduch === "Únik") autoZavady.push(`Vzduch: ${vzduchPozn || "Únik"}`);
+        if (mechy === "Poškozené") autoZavady.push(`Měchy: ${mechyPozn || "Poškozené"}`);
+        if (agregatVnitrni === "Poškozeno") autoZavady.push(`Agregát: ${agregatVnitrniPopis || "Poškozeno"}`);
+        if (tesneniSbs === "Poškozeno") autoZavady.push(`Těsnění/zámky SBS: ${tesneniSbsPopis || "Poškozeno"}`);
+        if (vulePanty === "Vůle") autoZavady.push(`Vůle panty/zámky: ${vulePantyPozn || "Vůle"}`);
+        if (datalogger === "Závada") autoZavady.push("Datalogger / Teploměr: Závada");
+        if (hasic1Stav === "Špatný") autoZavady.push("Hasicí přístroj 1: Špatný tlak");
+        if (hasic2Stav === "Špatný") autoZavady.push("Hasicí přístroj 2: Špatný tlak");
+
+        if (autoZavady.length > 0) {
+          const zText = autoZavady.join("; ");
+          mergedZavada = mergedZavada ? `${mergedZavada}; ${zText}` : zText;
+        }
+
+        const autoPoskozeni = [];
+        if (soupisOprav) autoPoskozeni.push(soupisOprav);
+        if (vnitrniPlast === "Poškozeno") autoPoskozeni.push(`Vnitřní plášť/podlaha: ${vnitrniPlastPopis || "Poškozeno"}`);
+        if (vnejsiPlast === "Poškozeno") autoPoskozeni.push(`Vnější plášť/střecha: ${vnejsiPlastPopis || "Poškozeno"}`);
+        if (prepazka === "Poškozeno") autoPoskozeni.push(`Přepážka Multi-Temp: ${prepazkaPozn || "Poškozeno"}`);
+        if (znaceniStav === "Poškozené") autoPoskozeni.push(`Značení/zástěrky: ${znaceniPozn || "Poškozené"}`);
+        if (frcStav === "Chybí") autoPoskozeni.push("Chybí certifikát FRC");
+        if (zelenaKartaStav === "Chybí") autoPoskozeni.push("Chybí zelená karta");
+        if (orvStav === "Chybí") autoPoskozeni.push("Chybí ORV");
+        if (paletyStav === "Chybí") autoPoskozeni.push(`Chybí palety EUR${paletyChybi ? ` (${paletyChybi} ks)` : ""}`);
+
+        wheels.forEach((w) => {
+          if (w.stav) {
+            autoPoskozeni.push(`${w.pozice}: ${w.stav}`);
+          }
+        });
+
+        if (autoPoskozeni.length > 0) {
+          const pText = autoPoskozeni.join("; ");
+          mergedPoskozeni = mergedPoskozeni ? `${mergedPoskozeni}; ${pText}` : pText;
+        }
+
+        const dezens = wheels.map((w) => parseFloat(w.dezen)).filter((n) => !Number.isNaN(n));
+        const minDezenStr = dezens.length > 0 ? `Min. dezén ${Math.min(...dezens)} mm` : "";
+        const stavPneuSummary = minDezenStr || (existingKontrola ? existingKontrola.stavPneu || "" : "");
 
         const updatedKontrolaData = {
-          id: existingKontrola ? existingKontrola.id : `K_${nowMs}_${slugifySpz(spz)}`,
           spz,
           stav: nextStav,
           stk: stkDatum || (existingKontrola ? existingKontrola.stk || "" : ""),
@@ -2389,23 +2667,31 @@
           kalibrace: kalibraceDatum || (existingKontrola ? existingKontrola.kalibrace || "" : ""),
           stavPneu: stavPneuSummary,
           tlakPneu: tlakPneu || (existingKontrola ? existingKontrola.tlakPneu || "" : ""),
-          zapsal: technik,
-          fotkaChecklistu: state.uploadedPhotoDataUrl || (existingKontrola ? existingKontrola.fotkaChecklistu || "" : ""),
-          nazevFotky: state.uploadedPhotoName || (existingKontrola ? existingKontrola.nazevFotky || "" : "")
+          zapsal: technik
         };
 
-        if (existingKontrola) {
+        const kontrolaDocId = existingKontrola
+          ? existingKontrola.id
+          : `K_${nowMs}_${slugifySpz(spz)}`;
+
+        if (!isLocal) {
+          await setDoc(doc(kontrolaColRef, kontrolaDocId), updatedKontrolaData);
+        } else if (existingKontrola) {
+          existingKontrola.id = kontrolaDocId;
           Object.assign(existingKontrola, updatedKontrolaData);
         } else {
-          state.kontrola.push(updatedKontrolaData);
+          state.kontrola.push({ id: kontrolaDocId, ...updatedKontrolaData });
         }
 
         if (syncTankovani && (palivo || mth !== "" || datumProhlidky || ewStav || shellStav || q8Stav || ceproStav)) {
           const existingTank = state.tankovani.find(
             (r) => String(r.spz || "").trim().toUpperCase() === spz
           );
+          const tankDocId = existingTank
+            ? existingTank.id
+            : `T_${nowMs}_${slugifySpz(spz)}`;
+
           const updatedTankData = {
-            id: existingTank ? existingTank.id : `T_${nowMs}_${slugifySpz(spz)}`,
             spz,
             stav: datumProhlidky ? "Měsíční kontrola" : (existingTank ? existingTank.stav || "Nezahájeno" : "Nezahájeno"),
             datumKontroly: datumProhlidky || (existingTank ? existingTank.datumKontroly || "" : ""),
@@ -2415,21 +2701,27 @@
             hladinaPaliva: palivo || (existingTank ? existingTank.hladinaPaliva || "" : ""),
             vickaKlice: existingTank ? existingTank.vickaKlice || "" : "",
             motohodiny: mth !== "" ? mth : (existingTank ? existingTank.motohodiny ?? "" : ""),
-            zapsal: technik,
-            fotkaChecklistu: state.uploadedPhotoDataUrl || (existingTank ? existingTank.fotkaChecklistu || "" : ""),
-            nazevFotky: state.uploadedPhotoName || (existingTank ? existingTank.nazevFotky || "" : "")
+            zapsal: technik
           };
 
-          if (existingTank) {
+          if (!isLocal) {
+            await setDoc(doc(tankovaniColRef, tankDocId), updatedTankData);
+          } else if (existingTank) {
+            existingTank.id = tankDocId;
             Object.assign(existingTank, updatedTankData);
           } else {
-            state.tankovani.push(updatedTankData);
+            state.tankovani.push({ id: tankDocId, ...updatedTankData });
           }
         }
 
-        await persistAllToCloud(false);
-        renderAll();
-        setSyncStatus(state.storageMode === "firebase" ? "online" : "local", state.storageMode === "firebase" ? "Sdíleno (Firebase online)" : "Uloženo v prohlížeči");
+        if (isLocal) {
+          saveLocalState();
+          renderAll();
+          setSyncStatus("local", "Uloženo v prohlížeči");
+        } else {
+          setSyncStatus("online", "Sdíleno (Firebase online)");
+        }
+
         showToast(`Checklist pro ${spz} uložen a promítnut do evidence.`, "success");
         resetChecklistForm(false);
       } catch (err) {
@@ -2444,20 +2736,17 @@
       document.getElementById("checklist-form").reset();
       resetWheelMeasurements();
       document.getElementById("cl-datum-prohlidky").value = formatIsoDate(getTodayStart());
-      document.getElementById("cl-technik").value = keepTechnik ? (savedTech || state.currentUser) : state.currentUser;
+      if (keepTechnik) {
+        document.getElementById("cl-technik").value = savedTech || state.currentUser;
+      } else {
+        document.getElementById("cl-technik").value = state.currentUser;
+      }
       document.getElementById("cl-sync-tankovani").checked = true;
-      clearPhotoPreview();
     }
 
-    function clearPhotoPreview() {
-      state.uploadedPhotoDataUrl = "";
-      state.uploadedPhotoName = "";
-      document.getElementById("cl-foto-input").value = "";
-      document.getElementById("cl-foto-preview").src = "";
-      document.getElementById("cl-foto-filename").textContent = "";
-      document.getElementById("cl-foto-preview-wrap").classList.add("hidden");
-    }
-
+    // -----------------------------------------------------------
+    // 6. MODÁLNÍ OKNA PRO ÚPRAVU
+    // -----------------------------------------------------------
     function openKontrolaModal(row, isNew) {
       const modal = document.getElementById("modal-edit-kontrola");
       document.getElementById("modal-kontrola-title").textContent = isNew
@@ -2491,6 +2780,10 @@
 
     async function handleSaveKontrolaModal(e) {
       e.preventDefault();
+      if (!state.firebaseReady) {
+        showToast("Databáze není připravena.", "warning");
+        return;
+      }
 
       const isNew = document.getElementById("edit-k-is-new").value === "true";
       const existingId = document.getElementById("edit-k-id").value;
@@ -2500,7 +2793,6 @@
         return;
       }
 
-      const existingDoc = !isNew ? state.kontrola.find((r) => r.id === existingId) : null;
       const actor = state.currentUser || document.getElementById("current-user-input").value.trim() || "Uživatel";
 
       const payload = {
@@ -2516,25 +2808,27 @@
         tlakPneu: document.getElementById("edit-k-tlak-pneu").value.trim(),
         zavada: document.getElementById("edit-k-zavada").value.trim(),
         poskozeni: document.getElementById("edit-k-poskozeni").value.trim(),
-        zapsal: actor,
-        fotkaChecklistu: existingDoc ? existingDoc.fotkaChecklistu || "" : "",
-        nazevFotky: existingDoc ? existingDoc.nazevFotky || "" : ""
+        zapsal: actor
       };
 
       const targetId = isNew ? `K_${Date.now()}_${slugifySpz(spz)}` : existingId;
 
       try {
         setSyncStatus("syncing", "Ukládání...");
-        if (isNew) {
-          state.kontrola.push({ id: targetId, ...payload });
+        if (state.storageMode !== "local" && kontrolaColRef) {
+          await setDoc(doc(kontrolaColRef, targetId), payload);
+          setSyncStatus("online", "Sdíleno (Firebase online)");
         } else {
-          const idx = state.kontrola.findIndex((r) => r.id === targetId);
-          if (idx >= 0) state.kontrola[idx] = { id: targetId, ...payload };
+          if (isNew) {
+            state.kontrola.push({ id: targetId, ...payload });
+          } else {
+            const idx = state.kontrola.findIndex((r) => r.id === targetId);
+            if (idx >= 0) state.kontrola[idx] = { id: targetId, ...payload };
+          }
+          saveLocalState();
+          renderAll();
+          setSyncStatus("local", "Uloženo v prohlížeči");
         }
-
-        await persistAllToCloud(false);
-        renderAll();
-        setSyncStatus(state.storageMode === "firebase" ? "online" : "local", state.storageMode === "firebase" ? "Sdíleno (Firebase online)" : "Uloženo v prohlížeči");
         closeKontrolaModal();
         showToast(isNew ? `Přidána nová SPZ ${spz}.` : `Uloženy změny pro ${spz}.`, "success");
       } catch (err) {
@@ -2571,6 +2865,10 @@
 
     async function handleSaveTankovaniModal(e) {
       e.preventDefault();
+      if (!state.firebaseReady) {
+        showToast("Databáze není připravena.", "warning");
+        return;
+      }
 
       const isNew = document.getElementById("edit-t-is-new").value === "true";
       const existingId = document.getElementById("edit-t-id").value;
@@ -2592,25 +2890,27 @@
         hladinaPaliva: document.getElementById("edit-t-palivo").value.trim(),
         vickaKlice: document.getElementById("edit-t-vicka").value.trim(),
         motohodiny: document.getElementById("edit-t-mth").value.trim(),
-        zapsal: actor,
-        fotkaChecklistu: existingDoc ? existingDoc.fotkaChecklistu || "" : "",
-        nazevFotky: existingDoc ? existingDoc.nazevFotky || "" : ""
+        zapsal: actor
       };
 
       const targetId = isNew ? `T_${Date.now()}_${slugifySpz(spz)}` : existingId;
 
       try {
         setSyncStatus("syncing", "Ukládání...");
-        if (isNew) {
-          state.tankovani.push({ id: targetId, ...payload });
+        if (state.storageMode !== "local" && tankovaniColRef) {
+          await setDoc(doc(tankovaniColRef, targetId), payload);
+          setSyncStatus("online", "Sdíleno (Firebase online)");
         } else {
-          const idx = state.tankovani.findIndex((r) => r.id === targetId);
-          if (idx >= 0) state.tankovani[idx] = { id: targetId, ...payload };
+          if (isNew) {
+            state.tankovani.push({ id: targetId, ...payload });
+          } else {
+            const idx = state.tankovani.findIndex((r) => r.id === targetId);
+            if (idx >= 0) state.tankovani[idx] = { id: targetId, ...payload };
+          }
+          saveLocalState();
+          renderAll();
+          setSyncStatus("local", "Uloženo v prohlížeči");
         }
-
-        await persistAllToCloud(false);
-        renderAll();
-        setSyncStatus(state.storageMode === "firebase" ? "online" : "local", state.storageMode === "firebase" ? "Sdíleno (Firebase online)" : "Uloženo v prohlížeči");
         closeTankovaniModal();
         showToast(isNew ? `Přidána SPZ ${spz} do tankování.` : `Uloženy změny pro ${spz}.`, "success");
       } catch (err) {
@@ -2620,21 +2920,9 @@
       }
     }
 
-    function openPhotoModal(dataUrl, title) {
-      document.getElementById("photo-zoom-img").src = dataUrl;
-      document.getElementById("photo-zoom-title").textContent = title;
-      const modal = document.getElementById("modal-photo-zoom");
-      modal.classList.remove("hidden");
-      modal.classList.add("flex");
-    }
-
-    function closePhotoModal() {
-      const modal = document.getElementById("modal-photo-zoom");
-      modal.classList.add("hidden");
-      modal.classList.remove("flex");
-      document.getElementById("photo-zoom-img").src = "";
-    }
-
+    // -----------------------------------------------------------
+    // 7. EXPORT DO CSV
+    // -----------------------------------------------------------
     function exportCsv() {
       const lines = [];
       lines.push("AGENDA;SPZ;STAV;STK;DATUM_KONTROLY;PRISTI_KONTROLA;FRC;KALIBRACE;MOTOHODINY;ZAVADA_NEBO_HLADINA;POSKOZENI_NEBO_VICKA;ZAPSAL");
@@ -2688,117 +2976,69 @@
       showToast("Export CSV byl vygenerován.", "success");
     }
 
+    // -----------------------------------------------------------
+    // 8. PŘEPÍNÁNÍ ZÁLOŽEK A POSLUCHAČE UDÁLOSTÍ
+    // -----------------------------------------------------------
     let deferredInstallPrompt = null;
 
     function setupPwaSupport() {
       try {
         const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="36" fill="#0f172a"/><rect x="20" y="20" width="152" height="152" rx="26" fill="#2563eb"/><text x="96" y="114" font-family="Arial,sans-serif" font-size="54" font-weight="bold" fill="#ffffff" text-anchor="middle">F230</text></svg>`;
-        const iconUrl = `data:image/svg+xml;base64,${btoa(iconSvg)}`;
-
-        let appleTouchIcon = document.querySelector('link[rel="apple-touch-icon"]');
-        if (!appleTouchIcon) {
-          appleTouchIcon = document.createElement("link");
-          appleTouchIcon.rel = "apple-touch-icon";
-          document.head.appendChild(appleTouchIcon);
-        }
-        appleTouchIcon.href = iconUrl;
-
-        const manifestObj = {
+        const iconUrl = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(iconSvg)))}`;
+        const manifest = {
           name: "FRIGA 230 – Evidence, STK a Checklisty",
           short_name: "FRIGA 230",
-          description: "Mobilní a webová evidence návěsů, hlídání STK a checklistů s fotodokumentací.",
           start_url: "./",
           display: "standalone",
           background_color: "#0f172a",
           theme_color: "#0f172a",
-          icons: [
-            {
-              src: iconUrl,
-              sizes: "192x192",
-              type: "image/svg+xml",
-              purpose: "any maskable"
-            }
-          ]
+          icons: [{ src: iconUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" }]
         };
-
-        const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
-        const manifestUrl = URL.createObjectURL(manifestBlob);
+        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" });
         const manifestLink = document.getElementById("pwa-manifest-link");
         if (manifestLink) {
-          manifestLink.setAttribute("href", manifestUrl);
-        }
-
-        if ("serviceWorker" in navigator && window.location.protocol.startsWith("http")) {
-          const swCode = `
-            self.addEventListener('install', () => self.skipWaiting());
-            self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
-            self.addEventListener('fetch', () => {});
-          `;
-          const swBlob = new Blob([swCode], { type: "application/javascript" });
-          const swUrl = URL.createObjectURL(swBlob);
-          navigator.serviceWorker.register(swUrl).catch(() => {});
+          manifestLink.href = URL.createObjectURL(manifestBlob);
         }
       } catch (err) {
-        console.warn("PWA manifest se nepodařilo inicializovat:", err);
+        console.warn("Manifest se nepodařilo vygenerovat:", err);
       }
 
-      const installBtn = document.getElementById("btn-install-app");
       window.addEventListener("beforeinstallprompt", (e) => {
         e.preventDefault();
         deferredInstallPrompt = e;
-        if (installBtn) {
-          installBtn.classList.remove("hidden");
-        }
+        const btn = document.getElementById("btn-install-app");
+        if (btn) btn.classList.remove("hidden");
       });
 
+      const installBtn = document.getElementById("btn-install-app");
       if (installBtn) {
         installBtn.addEventListener("click", async () => {
-          if (!deferredInstallPrompt) {
-            showToast("V prohlížeči použijte volbu „Přidat na plochu“ nebo „Nainstalovat aplikaci“.", "info");
-            return;
-          }
+          if (!deferredInstallPrompt) return;
           deferredInstallPrompt.prompt();
-          const { outcome } = await deferredInstallPrompt.userChoice;
+          await deferredInstallPrompt.userChoice;
           deferredInstallPrompt = null;
           installBtn.classList.add("hidden");
-          if (outcome === "accepted") {
-            showToast("Aplikace FRIGA 230 byla nainstalována.", "success");
-          }
         });
       }
-
-      window.addEventListener("appinstalled", () => {
-        if (installBtn) {
-          installBtn.classList.add("hidden");
-        }
-        showToast("Aplikace FRIGA 230 je připravena na ploše.", "success");
-      });
     }
 
     function switchTab(tabName) {
       state.activeTab = tabName;
 
-      const views = {
-        kontrola: document.getElementById("view-kontrola"),
-        checklist: document.getElementById("view-checklist"),
-        tankovani: document.getElementById("view-tankovani")
+      const tabs = {
+        kontrola: { btn: document.getElementById("tab-kontrola"), view: document.getElementById("view-kontrola") },
+        checklist: { btn: document.getElementById("tab-checklist"), view: document.getElementById("view-checklist") },
+        tankovani: { btn: document.getElementById("tab-tankovani"), view: document.getElementById("view-tankovani") }
       };
 
-      const buttons = {
-        kontrola: document.getElementById("tab-kontrola"),
-        checklist: document.getElementById("tab-checklist"),
-        tankovani: document.getElementById("tab-tankovani")
-      };
-
-      Object.keys(views).forEach((key) => {
+      Object.entries(tabs).forEach(([key, pair]) => {
+        if (!pair.btn || !pair.view) return;
         if (key === tabName) {
-          views[key].classList.remove("hidden");
-          buttons[key].className =
-            "tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition whitespace-nowrap cursor-pointer bg-blue-600 text-white shadow-sm";
+          pair.btn.className = "tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition whitespace-nowrap cursor-pointer bg-blue-600 text-white shadow-sm";
+          pair.view.classList.remove("hidden");
         } else {
-          views[key].classList.add("hidden");
-          buttons[key].className =
-            "tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition whitespace-nowrap cursor-pointer text-slate-300 hover:bg-slate-800 hover:text-white";
+          pair.btn.className = "tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition whitespace-nowrap cursor-pointer text-slate-300 hover:bg-slate-800 hover:text-white";
+          pair.view.classList.add("hidden");
         }
       });
 
@@ -2810,17 +3050,12 @@
       document.getElementById("tab-checklist").addEventListener("click", () => switchTab("checklist"));
       document.getElementById("tab-tankovani").addEventListener("click", () => switchTab("tankovani"));
 
-      document.getElementById("btn-retry-firebase").addEventListener("click", () => {
-        initFirebaseAndListeners();
-      });
-
       const userInput = document.getElementById("current-user-input");
       userInput.value = state.currentUser;
       document.getElementById("cl-technik").value = state.currentUser;
-      document.getElementById("cl-datum-prohlidky").value = formatIsoDate(getTodayStart());
 
-      userInput.addEventListener("input", (e) => {
-        state.currentUser = e.target.value;
+      userInput.addEventListener("input", () => {
+        state.currentUser = userInput.value;
         localStorage.setItem("friga230_technik_name", state.currentUser);
         const clTech = document.getElementById("cl-technik");
         if (!clTech.value || clTech.dataset.autoSynced === "true") {
@@ -2835,67 +3070,37 @@
 
       document.getElementById("search-spz-kontrola").addEventListener("input", renderKontrolaTab);
       document.getElementById("filter-hlidani").addEventListener("change", renderKontrolaTab);
-
-      document.getElementById("search-spz-tankovani").addEventListener("input", renderTankovaniTab);
-      document.getElementById("filter-tankovani-stav").addEventListener("change", renderTankovaniTab);
-
       document.getElementById("btn-open-add-spz-kontrola").addEventListener("click", () => {
-        openKontrolaModal({ spz: "", stav: "Nezahájeno" }, true);
-      });
-      document.getElementById("btn-open-add-spz-tankovani").addEventListener("click", () => {
-        openTankovaniModal({ spz: "", stav: "Nezahájeno" }, true);
-      });
-
-      document.getElementById("cl-btn-today").addEventListener("click", () => {
-        document.getElementById("cl-datum-prohlidky").value = formatIsoDate(getTodayStart());
-        showToast("Nastaveno dnešní datum prohlídky.", "info");
-      });
-
-      document.querySelectorAll("[data-collapse-target]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const targetId = btn.getAttribute("data-collapse-target");
-          const el = document.getElementById(targetId);
-          if (el) {
-            el.classList.toggle("hidden");
-          }
-        });
+        openKontrolaModal({ stav: "Nezahájeno" }, true);
       });
 
       document.getElementById("close-modal-kontrola").addEventListener("click", closeKontrolaModal);
       document.getElementById("cancel-modal-kontrola").addEventListener("click", closeKontrolaModal);
       document.getElementById("form-edit-kontrola").addEventListener("submit", handleSaveKontrolaModal);
 
+      document.getElementById("search-spz-tankovani").addEventListener("input", renderTankovaniTab);
+      document.getElementById("filter-tankovani-stav").addEventListener("change", renderTankovaniTab);
+      document.getElementById("btn-open-add-spz-tankovani").addEventListener("click", () => {
+        openTankovaniModal({ stav: "Nezahájeno" }, true);
+      });
+
       document.getElementById("close-modal-tankovani").addEventListener("click", closeTankovaniModal);
       document.getElementById("cancel-modal-tankovani").addEventListener("click", closeTankovaniModal);
       document.getElementById("form-edit-tankovani").addEventListener("submit", handleSaveTankovaniModal);
 
-      document.getElementById("close-photo-zoom").addEventListener("click", closePhotoModal);
-      document.getElementById("cl-foto-preview").addEventListener("click", () => {
-        if (state.uploadedPhotoDataUrl) {
-          openPhotoModal(state.uploadedPhotoDataUrl, state.uploadedPhotoName || "Náhled checklistu");
-        }
+      document.querySelectorAll("[data-collapse-target]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const targetId = btn.getAttribute("data-collapse-target");
+          const el = document.getElementById(targetId);
+          if (el) el.classList.toggle("hidden");
+        });
       });
 
-      document.getElementById("cl-foto-input").addEventListener("change", async (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (!file) {
-          clearPhotoPreview();
-          return;
-        }
-        try {
-          const compressed = await compressImageFile(file);
-          state.uploadedPhotoDataUrl = compressed;
-          state.uploadedPhotoName = file.name;
-          document.getElementById("cl-foto-preview").src = compressed;
-          document.getElementById("cl-foto-filename").textContent = file.name;
-          document.getElementById("cl-foto-preview-wrap").classList.remove("hidden");
-        } catch (err) {
-          console.error("Chyba při zpracování fotky:", err);
-          showToast("Nepodařilo se načíst fotografii.", "error");
-        }
+      document.getElementById("cl-datum-prohlidky").value = formatIsoDate(getTodayStart());
+      document.getElementById("cl-btn-today").addEventListener("click", () => {
+        document.getElementById("cl-datum-prohlidky").value = formatIsoDate(getTodayStart());
       });
 
-      document.getElementById("cl-remove-foto").addEventListener("click", clearPhotoPreview);
       document.getElementById("cl-reset-btn").addEventListener("click", () => resetChecklistForm(true));
       document.getElementById("checklist-form").addEventListener("submit", handleChecklistSubmit);
 
