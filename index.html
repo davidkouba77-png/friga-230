@@ -15,6 +15,7 @@
     
     <!-- Firebase SDK (Compat verze pro snadné použití v jednom souboru) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <style>
@@ -92,14 +93,13 @@
                                 <span>Checklist Vozidel</span>
                                 <span id="syncBadge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/20 text-amber-200 border border-amber-400/30" title="Stav synchronizace dat">
                                     <span id="syncDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
-                                    <span id="syncText">Lokální režim</span>
+                                    <span id="syncText">Připojování...</span>
                                 </span>
                             </h1>
                             <p class="text-blue-200 text-xs sm:text-sm font-medium">Středisko 230 & 220 – Online evidence</p>
                         </div>
                     </div>
-                    <!-- Mobilní tlačítko pro nastavení databáze -->
-                    <button onclick="openDbModal()" class="sm:hidden bg-white/10 hover:bg-white/20 p-2 rounded-lg text-white transition" title="Nastavení sdílené databáze">
+                    <button onclick="openDbModal()" class="sm:hidden bg-white/10 hover:bg-white/20 p-2 rounded-lg text-white transition" title="Stav sdílené databáze">
                         <i class="fa-solid fa-cloud"></i>
                     </button>
                 </div>
@@ -118,7 +118,7 @@
                         </button>
                     </div>
 
-                    <button onclick="openDbModal()" class="hidden sm:flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/15 px-3 py-2.5 rounded-xl text-xs font-semibold text-white transition" title="Propojit s online databází pro tým">
+                    <button onclick="openDbModal()" class="hidden sm:flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/15 px-3 py-2.5 rounded-xl text-xs font-semibold text-white transition" title="Stav sdílené databáze">
                         <i class="fa-solid fa-cloud"></i>
                         <span>Sdílení</span>
                     </button>
@@ -130,16 +130,16 @@
     <!-- Hlavní obsah -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <!-- Upozornění pro lokální režim -->
-        <div id="localModeBanner" class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-amber-800">
+        <!-- Upozornění pouze při výpadku spojení -->
+        <div id="localModeBanner" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-amber-800">
             <div class="flex items-start sm:items-center gap-2.5">
                 <i class="fa-solid fa-circle-info text-amber-600 text-lg mt-0.5 sm:mt-0"></i>
                 <div>
-                    <span class="font-bold">Režim jednoho zařízení:</span> Změny se nyní ukládají jen do tohoto prohlížeče. Chcete-li aplikaci sdílet v reálném čase s kolegy na středisku, připojte bezplatnou databázi Firebase.
+                    <span class="font-bold">Offline / Lokální záloha:</span> Nepodařilo se navázat spojení se sdílenou databází Firebase. Zkontrolujte připojení k internetu nebo pravidla databáze.
                 </div>
             </div>
             <button onclick="openDbModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-3.5 py-1.5 rounded-lg text-xs whitespace-nowrap transition self-start sm:self-auto">
-                Nastavit sdílení
+                Detail připojení
             </button>
         </div>
 
@@ -337,7 +337,7 @@
         </div>
     </div>
 
-    <!-- MODÁLNÍ OKNO: Nastavení sdílené databáze Firebase -->
+    <!-- MODÁLNÍ OKNO: Stav sdílené databáze Firebase -->
     <div id="dbModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full overflow-hidden border border-gray-200">
             <div class="bg-[#003366] text-white px-5 py-4 flex items-center justify-between">
@@ -349,42 +349,42 @@
                 </button>
             </div>
             <div class="p-5 space-y-4 text-sm text-gray-600 max-h-[75vh] overflow-y-auto custom-scrollbar">
-                <p>Aby se změny okamžitě propisovaly všem kolegům na PC i mobilu, vložte níže konfigurační údaje z bezplatné služby <strong>Google Firebase (Firestore)</strong>.</p>
+                <p>Aplikace je přednastavena pro automatické sdílení přes projekt <strong>navesy-230</strong>. Každý uživatel se po otevření připojí automaticky bez nutnosti ručního zadávání klíčů.</p>
                 
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-3.5 text-xs text-blue-900 space-y-1.5">
-                    <div class="font-bold">Jak získat klíč zdarma za 2 minuty:</div>
-                    <ol class="list-decimal ml-4 space-y-1">
-                        <li>Otevřete <a href="https://console.firebase.google.com/" target="_blank" class="underline font-semibold">console.firebase.google.com</a> a vytvořte projekt.</li>
-                        <li>V levém menu zvolte <strong>Build → Firestore Database</strong>, klikněte na <em>Create database</em> a zvolte <strong>Start in test mode</strong>.</li>
-                        <li>V nastavení projektu (ozubené kolečko → <em>Project settings</em>) dole přidejte webovou aplikaci (ikona <code>&lt;/&gt;</code>) a zkopírujte objekt <code>firebaseConfig</code>.</li>
-                    </ol>
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-900 space-y-1">
+                    <div class="font-bold">Aktivní sdílený projekt: <code>navesy-230</code></div>
+                    <div>Kolekce ve Firestore: <code>vchd_vehicles</code> a <code>vchd_records</code></div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Vložte firebaseConfig (JSON nebo JS objekt)</label>
-                    <textarea id="firebaseConfigInput" rows="6" placeholder='{
-  "apiKey": "AIzaSy...",
-  "authDomain": "vas-projekt.firebaseapp.com",
-  "projectId": "vas-projekt",
-  "storageBucket": "vas-projekt.appspot.com",
-  "messagingSenderId": "123456789",
-  "appId": "1:123456789:web:abcdef"
-}' class="w-full p-3 border border-gray-300 rounded-xl font-mono text-xs focus:ring-2 focus:ring-[#003366] focus:outline-none"></textarea>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Vlastní / záložní firebaseConfig (volitelné)</label>
+                    <textarea id="firebaseConfigInput" rows="6" class="w-full p-3 border border-gray-300 rounded-xl font-mono text-xs focus:ring-2 focus:ring-[#003366] focus:outline-none"></textarea>
                 </div>
 
                 <div id="dbConnectionStatus" class="hidden text-xs font-semibold p-2.5 rounded-lg"></div>
             </div>
             <div class="bg-gray-50 px-5 py-3.5 border-t border-gray-200 flex flex-wrap justify-between gap-2">
-                <button onclick="disconnectFirebase()" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50">Odpojit (Lokální režim)</button>
+                <button onclick="resetToDefaultFirebase()" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-blue-700 hover:bg-blue-50">Obnovit výchozí sdílení</button>
                 <div class="flex gap-2">
                     <button onclick="closeDbModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-200">Zavřít</button>
-                    <button onclick="saveFirebaseConfig()" class="px-5 py-2 rounded-xl text-sm font-bold bg-[#003366] hover:bg-blue-900 text-white shadow-sm">Připojit databázi</button>
+                    <button onclick="saveFirebaseConfig()" class="px-5 py-2 rounded-xl text-sm font-bold bg-[#003366] hover:bg-blue-900 text-white shadow-sm">Uložit a připojit</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // --- VÝCHOZÍ SDÍLENÁ KONFIGURACE FIREBASE (PŘEDVYPLNĚNO PRO VŠECHNY UŽIVATELE) ---
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyBAGl9T8gINNjgKY8hZagItzNMTkn5_BYo",
+            authDomain: "navesy-230.firebaseapp.com",
+            projectId: "navesy-230",
+            storageBucket: "navesy-230.firebasestorage.app",
+            messagingSenderId: "609525524829",
+            appId: "1:609525524829:web:1a8f50e5cc92eca63520b4",
+            measurementId: "G-0552WL878N"
+        };
+
         // --- VÝCHOZÍ DATA VOZIDEL ---
         const DEFAULT_VEHICLES = [
             // Středisko 230
@@ -486,19 +486,21 @@
             renderVehicles();
         }
 
-        // --- DATOVÁ VRSTVA (LocalStorage + Firebase) ---
+        // --- DATOVÁ VRSTVA (Automatické připojení k Firebase pro všechny uživatele) ---
         function initData() {
+            let activeConfig = DEFAULT_FIREBASE_CONFIG;
             const savedConfig = localStorage.getItem('vchd_firebase_config');
             if (savedConfig) {
                 try {
-                    const config = JSON.parse(savedConfig);
-                    connectToFirebase(config);
-                    return;
+                    const parsed = JSON.parse(savedConfig);
+                    if (parsed && parsed.projectId && parsed.apiKey) {
+                        activeConfig = parsed;
+                    }
                 } catch (e) {
-                    console.error("Chyba při načítání Firebase konfigurace:", e);
+                    console.warn("Používám výchozí Firebase konfiguraci.");
                 }
             }
-            loadFromLocalStorage();
+            connectToFirebase(activeConfig);
         }
 
         function loadFromLocalStorage() {
@@ -546,19 +548,28 @@
         }
 
         // --- FIREBASE PŘIPOJENÍ ---
-        function connectToFirebase(config) {
+        async function connectToFirebase(config) {
             try {
                 if (!firebase.apps.length) {
                     firebase.initializeApp(config);
                 }
+
+                // Anonymní přihlášení (pokud jsou pravidla Firestore nastavena na request.auth != null)
+                if (firebase.auth) {
+                    try {
+                        await firebase.auth().signInAnonymously();
+                    } catch (authErr) {
+                        console.warn("Anonymní přihlášení přeskočeno:", authErr.message);
+                    }
+                }
+
                 db = firebase.firestore();
-                setSyncStatus(true);
 
                 // Poslouchání změn vozidel
                 if (unsubscribeVehicles) unsubscribeVehicles();
                 unsubscribeVehicles = db.collection('vchd_vehicles').onSnapshot(snapshot => {
+                    setSyncStatus(true);
                     if (snapshot.empty) {
-                        // Nahrát výchozí vozidla při prvním spuštění
                         const batch = db.batch();
                         DEFAULT_VEHICLES.forEach(v => {
                             batch.set(db.collection('vchd_vehicles').doc(v.id), v);
@@ -567,32 +578,38 @@
                     } else {
                         vehicles = snapshot.docs.map(doc => doc.data());
                         vehicles.sort((a, b) => a.spz.localeCompare(b.spz));
+                        saveToLocalStorage();
                         renderVehicles();
                     }
+                }, error => {
+                    console.error("Firestore vehicles error:", error);
+                    loadFromLocalStorage();
                 });
 
                 // Poslouchání změn záznamů
                 if (unsubscribeRecords) unsubscribeRecords();
                 unsubscribeRecords = db.collection('vchd_records').onSnapshot(snapshot => {
+                    setSyncStatus(true);
                     records = {};
                     snapshot.docs.forEach(doc => {
                         records[doc.id] = doc.data();
                     });
+                    saveToLocalStorage();
                     renderVehicles();
+                }, error => {
+                    console.error("Firestore records error:", error);
+                    loadFromLocalStorage();
                 });
 
             } catch (error) {
                 console.error("Firebase connection error:", error);
-                alert("Nepodařilo se připojit k Firebase: " + error.message);
                 loadFromLocalStorage();
             }
         }
 
         function openDbModal() {
             const saved = localStorage.getItem('vchd_firebase_config');
-            if (saved) {
-                document.getElementById('firebaseConfigInput').value = saved;
-            }
+            document.getElementById('firebaseConfigInput').value = saved || JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
             document.getElementById('dbModal').classList.remove('hidden');
         }
 
@@ -605,9 +622,7 @@
             if (!raw) return;
 
             try {
-                // Očištění pokud uživatel zkopíroval i "const firebaseConfig = " a středník
                 raw = raw.replace(/^const\s+\w+\s*=\s*/, '').replace(/;$/, '');
-                // Převod JS objektu s neuzavřenými klíči na validní JSON
                 const jsonStr = raw.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":').replace(/'/g, '"');
                 const config = JSON.parse(jsonStr);
 
@@ -625,7 +640,7 @@
             }
         }
 
-        function disconnectFirebase() {
+        function resetToDefaultFirebase() {
             localStorage.removeItem('vchd_firebase_config');
             location.reload();
         }
@@ -807,7 +822,6 @@
                 const div = document.createElement('div');
                 div.onclick = () => {
                     modalTempChecks[index] = !modalTempChecks[index];
-                    // Automaticky přepnout na Hotovo, pokud je všech 8 bodů splněno
                     if (modalTempChecks.every(Boolean) && modalTempStatus === 'pending') {
                         setModalStatus('done');
                     }
